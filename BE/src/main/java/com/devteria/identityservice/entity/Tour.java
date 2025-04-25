@@ -2,7 +2,12 @@ package com.devteria.identityservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,8 +19,14 @@ public class Tour {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tourId;
 
+    private String tourCode;
+
     private String tourName;
+
+    private String tourBanner;
+
     private String description;
+
     private BigDecimal price;
 
     // Liên kết đến User (quản lý tour)
@@ -25,6 +36,29 @@ public class Tour {
 
     private String companyName;  // Tên công ty quản lý tour (Vietravel, Tourexpress, v.v.)
 
-    private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    private String location; // Địa điểm (ví dụ: Đà Nẵng, Paris, Tokyo)
+
+    private Integer totalTicket; // Tổng số lượng vé
+
+    private Integer availableTicket; // Số vé còn lại
+
+    private Integer soldTicket;
+
+    private LocalDate startDate; // Ngày bắt đầu tour
+
+    private LocalDate endDate; // Ngày kết thúc tour
+
+    @Enumerated(EnumType.STRING)
+    private TourType tourType;
+
+    @CreationTimestamp
+    private Timestamp createdAt;
+
+    @UpdateTimestamp
+    private Timestamp updatedAt;
+
+    public enum TourType {
+        DOMESTIC,    // Trong nước
+        INTERNATIONAL  // Nước ngoài
+    }
 }

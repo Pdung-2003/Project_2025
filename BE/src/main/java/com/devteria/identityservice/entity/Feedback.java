@@ -1,35 +1,44 @@
 package com.devteria.identityservice.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.sql.Timestamp;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Feedback {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer feedbackId;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)  // Liên kết với bảng User (khách hàng)
+    @JoinColumn(name = "customer_id", nullable = false)
     private User customer;
 
     @ManyToOne
-    @JoinColumn(name = "tour_id", nullable = false)  // Liên kết với bảng Tours
+    @JoinColumn(name = "tour_id", nullable = false)
     private Tour tour;
+
+    @ManyToOne
+    @JoinColumn(name = "booking_id")  // Liên kết với Booking
+    private Booking booking;  // Đảm bảo người dùng đã tham gia tour này và booking đã thanh toán
 
     @Column(nullable = false)
     private Integer rating;  // Đánh giá
 
+    @Column(length = 1000)
     private String comment;  // Bình luận của khách hàng
 
-    @Column(nullable = false, updatable = false)
-    private java.sql.Timestamp createdAt;  // Thời gian tạo
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Timestamp createdAt;  // Thời gian tạo
 
-    @Column(nullable = false)
-    private java.sql.Timestamp updatedAt;  // Thời gian cập nhật
+    @UpdateTimestamp
+    private Timestamp updatedAt;  // Thời gian cập nhật
 }
