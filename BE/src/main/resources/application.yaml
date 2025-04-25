@@ -1,0 +1,25 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /identity
+
+spring:
+  datasource:
+    url: jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres?user=postgres.mpddbzkmroumgazdwomn&password=Ducdung789!
+    username: postgres
+    password: Ducdung789!
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+jwt:
+  signerKey: "x5N/IYQDk/BvPC2XWv7xE2TdU2YlZsewgbUOvN3/m71lrjo74knXkebs4jSmEjjQ"
+  valid-duration: 5 # in seconds
+  refreshable-duration: 120  # in seconds
+  logging:
+    level:
+      org.springframework: DEBUG
+      com.devteria: DEBUG
+

@@ -1,5 +1,6 @@
 package com.devteria.identityservice.entity;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,8 @@ public class Role {
 
     private String description;
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
-    private Set<UserRolePermission> userRolePermissions;
+    private Set<UserRolePermission> userRolePermissions = new HashSet<>();
+
     public Set<Permission> getPermissions() {
         return userRolePermissions.stream()
                 .map(UserRolePermission::getPermission)

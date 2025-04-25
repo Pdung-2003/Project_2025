@@ -177,10 +177,16 @@ public class AuthenticationService {
 
         if (!CollectionUtils.isEmpty(user.getRoles())) {
             user.getRoles().forEach(role -> {
-                stringJoiner.add("ROLE_" + role.getName());
+                if (role != null && role.getName() != null) {
+                    stringJoiner.add("ROLE_" + role.getName());
+                }
+
                 if (!CollectionUtils.isEmpty(role.getPermissions())) {
-                    role.getPermissions().forEach(permission ->
-                            stringJoiner.add(permission.getName()));  // Lấy tên permission
+                    role.getPermissions().forEach(permission -> {
+                        if (permission != null && permission.getName() != null) {
+                            stringJoiner.add(permission.getName());
+                        }
+                    });
                 }
             });
         }

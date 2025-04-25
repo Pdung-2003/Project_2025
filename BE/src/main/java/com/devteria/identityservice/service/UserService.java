@@ -4,7 +4,9 @@ import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;
 
+import com.devteria.identityservice.entity.Permission;
 import com.devteria.identityservice.entity.UserRolePermission;
+import com.devteria.identityservice.repository.PermissionRepository;
 import com.devteria.identityservice.repository.UserRolePermissionRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +26,7 @@ import com.devteria.identityservice.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,11 +34,13 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PermissionRepository permissionRepository;
     private final UserRolePermissionRepository userRolePermissionRepository; // Add this
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
     // Method to create a new user
+    @Transactional
     public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTED);
@@ -52,10 +57,13 @@ public class UserService {
 
         // Create user-role-permission records
         for (Role role : roles) {
-            UserRolePermission userRolePermission = new UserRolePermission();
-            userRolePermission.setUser(user);
-            userRolePermission.setRole(role);
-            userRolePermissionRepository.save(userRolePermission);
+            for(Permission permission : permissionRepository.findAll()) {
+                UserRolePermission userRolePermission = new UserRolePermission();
+                userRolePermission.setUser(user);
+                userRolePermission.setRole(role);
+                userRolePermission.setPermission(permission);
+                userRolePermissionRepository.save(userRolePermission);
+            }
         }
 
         return userMapper.toUserResponse(user);
