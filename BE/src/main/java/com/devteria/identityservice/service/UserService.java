@@ -3,6 +3,8 @@ package com.devteria.identityservice.service;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.devteria.identityservice.entity.Permission;
 import com.devteria.identityservice.entity.UserRolePermission;
@@ -46,27 +48,43 @@ public class UserService {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
-        // Create user entity
-        User user = userMapper.toUser(request);
-        user.setPasswordDigest(passwordEncoder.encode(request.getPassword()));
+        User user = createAndSaveUser(request);
+        Set<Role> roles = new HashSet<>(roleRepository.findAllById(request.getRoles()));
+        List<Permission> permissions = permissionRepository.findAll();
 
-        // Save the user first
-        user = userRepository.save(user);
-
-        HashSet<Role> roles = new HashSet<>(roleRepository.findAllById(request.getRoles()));
-
-        // Create user-role-permission records
-        for (Role role : roles) {
-            for(Permission permission : permissionRepository.findAll()) {
-                UserRolePermission userRolePermission = new UserRolePermission();
-                userRolePermission.setUser(user);
-                userRolePermission.setRole(role);
-                userRolePermission.setPermission(permission);
-                userRolePermissionRepository.save(userRolePermission);
-            }
-        }
+        assignPermissionsToUser(user, roles, permissions);
 
         return userMapper.toUserResponse(user);
+    }
+
+    private User createAndSaveUser(UserCreationRequest request) {
+        User user = userMapper.toUser(request);
+        user.setPasswordDigest(passwordEncoder.encode(request.getPassword()));
+        return userRepository.save(user);
+    }
+
+    private void assignPermissionsToUser(User user, Set<Role> roles, List<Permission> permissions) {
+        Map<String, String> rolePermissionMap = Map.of(
+                "USER", "User Permission",
+                "ADMIN", "Admin Permission",
+                "TOUR_MANAGER", "Tour Manager Permission"
+        );
+
+        for (Role role : roles) {
+            String requiredPermission = rolePermissionMap.get(role.getName());
+            if (requiredPermission == null) continue;
+
+            permissions.stream()
+                    .filter(permission -> permission.getName().equals(requiredPermission))
+                    .findFirst()
+                    .ifPresent(permission -> {
+                        UserRolePermission urp = new UserRolePermission();
+                        urp.setUser(user);
+                        urp.setRole(role);
+                        urp.setPermission(permission);
+                        userRolePermissionRepository.save(urp);
+                    });
+        }
     }
 
     // Get current user information

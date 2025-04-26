@@ -179,15 +179,16 @@ public class AuthenticationService {
             user.getRoles().forEach(role -> {
                 if (role != null && role.getName() != null) {
                     stringJoiner.add("ROLE_" + role.getName());
+
+                    if (!CollectionUtils.isEmpty(role.getUserRolePermissions())) {
+                        role.getUserRolePermissions().forEach(rolePermission -> {
+                            if (rolePermission.getPermission() != null && rolePermission.getPermission().getName() != null) {
+                                stringJoiner.add(rolePermission.getPermission().getName());
+                            }
+                        });
+                    }
                 }
 
-                if (!CollectionUtils.isEmpty(role.getPermissions())) {
-                    role.getPermissions().forEach(permission -> {
-                        if (permission != null && permission.getName() != null) {
-                            stringJoiner.add(permission.getName());
-                        }
-                    });
-                }
             });
         }
 
