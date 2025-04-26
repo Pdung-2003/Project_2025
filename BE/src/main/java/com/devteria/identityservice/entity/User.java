@@ -1,12 +1,15 @@
 package com.devteria.identityservice.entity;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Getter
 @Setter
@@ -23,16 +26,20 @@ public class User {
     private String username;
     private String passwordDigest;
     private String email;
-
     private String address;
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
-    @Builder.Default
-    private LocalDateTime updatedAt = LocalDateTime.now();
-    @Column(nullable = true)  // chỉ có Customer và Admin mới có
+    @Column  // chỉ có Customer và Admin mới có
     private String fullName;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserRolePermission> userRolePermissions;
+
+    @Column  // chỉ có Customer và Admin mới có
+    private LocalDate birthDate;
+
+    @CreationTimestamp
+    private Timestamp createdAt;
+
+    @UpdateTimestamp
+    private Timestamp updatedAt;
 
     public Set<Role> getRoles() {
         return userRolePermissions.stream()
@@ -45,7 +52,5 @@ public class User {
                 .map(UserRolePermission::getPermission)
                 .collect(Collectors.toSet());
     }
-    @Column(nullable = true)  // chỉ có Customer và Admin mới có
-    private java.sql.Date birthDate;
 }
 

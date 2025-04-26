@@ -4,6 +4,11 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.sql.Timestamp;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -19,14 +24,16 @@ public class Itinerary {
     private Tour tour;  // Tham chiếu đến bảng Tours
 
     @Column(nullable = false)
-    private java.sql.Date date;  // Ngày của lịch trình
+    private LocalDate date;  // Ngày của lịch trình
 
     @Column(nullable = false)
     private String activityDescription;  // Mô tả hoạt động trong lịch trình
 
     @Column(nullable = false, updatable = false)
-    private java.sql.Timestamp createdAt;  // Thời gian tạo
+    @CreationTimestamp
+    private Timestamp createdAt;  // Thời gian tạo
 
     @Column(nullable = false)
-    private java.sql.Timestamp updatedAt;  // Thời gian cập nhật
+    @UpdateTimestamp
+    private Timestamp updatedAt;  // Thời gian cập nhật
 }

@@ -26,6 +26,7 @@ public class Role {
     private String name;
 
     private String description;
+
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
     private Set<UserRolePermission> userRolePermissions = new HashSet<>();
 

@@ -2,55 +2,58 @@ package com.devteria.identityservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.List;
 
+@Entity
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer bookingId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)  // Liên kết với bảng User (khách hàng)
-    private User customer;  // Customer là một User trong hệ thống
+    @JoinColumn(name = "user_id", nullable = false)
+    private User customer;
 
     @ManyToOne
-    @JoinColumn(name = "tour_id", nullable = false)  // Liên kết với bảng Tour
+    @JoinColumn(name = "tour_id", nullable = false)
     private Tour tour;
 
-    @Column(nullable = false)
-    private Timestamp bookingDate;
+    private Integer numberOfPeople;
+
+    private LocalDate bookingDate; // Ngày tạo đơn đặt tour
+
+    private LocalDate tourDate; // Ngày người dùng muốn đi tour (rất quan trọng)
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Status status;  // Trạng thái của booking
+    private Status status;
 
-    @Column(nullable = false, updatable = false)
+    private Boolean isTicketSent = false; // Đã gửi vé qua email chưa
+
+    private String ticketUrl; // Link vé PDF (nếu có)
+
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+    private List<Payment> payments;
+
+    @CreationTimestamp
     private Timestamp createdAt;
 
-    @Column(nullable = false)
+    @UpdateTimestamp
     private Timestamp updatedAt;
 
     public enum Status {
-        PENDING, CONFIRMED, CANCELLED  // Trạng thái của booking
-    }
-
-    @PrePersist
-    public void onCreate() {
-        // Set createdAt và updatedAt trước khi lưu mới
-        this.createdAt = new Timestamp(System.currentTimeMillis());
-        this.updatedAt = new Timestamp(System.currentTimeMillis());
-    }
-
-    @PreUpdate
-    public void onUpdate() {
-        // Set updatedAt mỗi khi cập nhật
-        this.updatedAt = new Timestamp(System.currentTimeMillis());
+        PENDING,       // Chưa xác nhận
+        CONFIRMED,     // Đã xác nhận tour
+        PAID,          // Đã thanh toán
+        CANCELLED      // Bị hủy
     }
 }
