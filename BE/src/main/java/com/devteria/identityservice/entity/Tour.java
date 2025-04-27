@@ -48,17 +48,10 @@ public class Tour {
 
     private LocalDate endDate; // Ngày kết thúc tour
 
-    @Enumerated(EnumType.STRING)
-    private TourType tourType;
-
     @CreationTimestamp
     private Timestamp createdAt;
 
     @UpdateTimestamp
     private Timestamp updatedAt;
 
-    public enum TourType {
-        DOMESTIC,    // Trong nước
-        INTERNATIONAL  // Nước ngoài
-    }
 }
