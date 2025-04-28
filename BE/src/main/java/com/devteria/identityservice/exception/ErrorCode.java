@@ -18,6 +18,8 @@ public enum ErrorCode {
     INVALID_DOB(1008, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
     ROLE_NOT_EXISTED(1009, "Role not existed", HttpStatus.NOT_FOUND),
     PERMISSION_NOT_EXISTED(1010, "Permission not existed", HttpStatus.NOT_FOUND),
+    TOUR_NOT_EXISTED(1011, "Tour not existed", HttpStatus.NOT_FOUND),
+    BOOKING_NOT_EXISTED(1011, "Booking not existed", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

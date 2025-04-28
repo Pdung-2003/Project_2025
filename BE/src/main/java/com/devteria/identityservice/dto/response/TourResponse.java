@@ -12,7 +12,7 @@ public class TourResponse {
     private String tourBanner;
     private String description;
     private Double price;
-    private Integer managerId;
+    private Long managerId;
     private String companyName;
     private String location;
     private Integer totalTicket;
