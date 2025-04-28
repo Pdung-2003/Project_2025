@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { Controller } from 'react-hook-form';
 
-const TextField = ({ label, placeholder, rules, inputProps, control, name, ...props }) => {
+const TextFieldControl = ({ label, placeholder, rules, inputProps, control, name, ...props }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -42,9 +42,9 @@ const TextField = ({ label, placeholder, rules, inputProps, control, name, ...pr
   );
 };
 
-export default TextField;
+export default TextFieldControl;
 
-TextField.propTypes = {
+TextFieldControl.propTypes = {
   label: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,

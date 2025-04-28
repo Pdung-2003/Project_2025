@@ -41,20 +41,20 @@ const AvatarProfile = () => {
                 to={`/profile-page`}
                 className="w-full text-left hover:bg-gray-100 px-2 py-1 flex"
               >
-                <User className="mr-3 mt-1" />
-                Profile
+                <User className="mr-2" />
+                Hồ sơ cá nhân
               </Link>
             </li>
             <li>
               <Link to={`/order`} className="w-full text-left hover:bg-gray-100 px-2 py-1 flex">
-                <Truck className="w-4 h-4 mr-3 mt-1" />
-                Order
+                <Truck className="mr-2" />
+                Đơn hàng
               </Link>
             </li>
             <li>
-              <button className="w-full text-left hover:bg-gray-100 px-2 py-1">
+              <button className="w-full text-left hover:bg-gray-100 px-2 py-1 text-red-600">
                 <LogOut className="inline mr-2" />
-                Logout
+                Đăng xuất
               </button>
             </li>
           </ul>

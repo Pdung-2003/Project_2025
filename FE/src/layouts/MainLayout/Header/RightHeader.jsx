@@ -17,7 +17,7 @@ const RightHeader = () => {
             className="p-2 text-lg font-semibold hover:cursor-pointer hover:text-gray-700"
             onClick={() => setIsLoginModalOpen(true)}
           >
-            Login
+            Đăng nhập
           </p>
           <LoginModal open={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
         </>
