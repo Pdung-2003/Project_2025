@@ -1,11 +1,40 @@
 import AppModal from '@/components/common/AppModal';
 import SearchDebounce from '@/components/common/SearchDebounce';
+import { getUsers } from '@/services/user.service';
 import { Pencil, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const UserManager = () => {
   const [search, setSearch] = useState('');
   const [deleteUser, setDeleteUser] = useState(null);
+  const [userList, setUserList] = useState([]);
+
+  const handleDeleteUser = async (id) => {
+    try {
+      await deleteUser(id);
+      setUserList(userList.filter((user) => user.id !== id));
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setDeleteUser(null);
+    }
+  };
+
+  useEffect(() => {
+    const fetchUserList = async () => {
+      try {
+        const response = await getUsers();
+        setUserList(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchUserList();
+
+    return () => {
+      setUserList([]);
+    };
+  }, []);
 
   useEffect(() => {
     const tableEl = document.getElementById('table-container');
@@ -36,24 +65,20 @@ const UserManager = () => {
               <tr>
                 <th className="border border-gray-300 p-2">STT</th>
                 <th className="border border-gray-300 p-2">Họ tên</th>
+                <th className="border border-gray-300 p-2">Tài khoản</th>
                 <th className="border border-gray-300 p-2">Email</th>
                 <th className="border border-gray-300 p-2">Số điện thoại</th>
-                <th className="border border-gray-300 p-2">Ngày sinh</th>
-                <th className="border border-gray-300 p-2">Giới tính</th>
-                <th className="border border-gray-300 p-2">Trạng thái</th>
-                <th className="border border-gray-300 p-2">Hành động</th>
+                <th className="border border-gray-300 p-2">Thao tác</th>
               </tr>
             </thead>
             <tbody>
-              {Array.from({ length: 50 }).map((_, index) => (
-                <tr key={index} className="hover:bg-gray-50">
+              {userList.map((user, index) => (
+                <tr key={user.id} className="hover:bg-gray-50">
                   <td className="border border-gray-300 text-center p-2">{index + 1}</td>
-                  <td className="border border-gray-300 p-2">Nguyễn Văn A</td>
-                  <td className="border border-gray-300 p-2">nguyenvana@gmail.com</td>
-                  <td className="border border-gray-300 p-2">0909090909</td>
-                  <td className="border border-gray-300 p-2">01/01/2000</td>
-                  <td className="border border-gray-300 p-2">Nam</td>
-                  <td className="border border-gray-300 p-2">Hoạt động</td>
+                  <td className="border border-gray-300 p-2">{user.fullName}</td>
+                  <td className="border border-gray-300 p-2">{user.username}</td>
+                  <td className="border border-gray-300 p-2">{user.email}</td>
+                  <td className="border border-gray-300 p-2">{user.phoneNumber}</td>
                   <td className="border border-gray-300 p-2 text-center">
                     <button className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 mr-2">
                       <Pencil className="w-4 h-4" />
@@ -94,7 +119,9 @@ const UserManager = () => {
               <button className="btn-outline-secondary" onClick={() => setDeleteUser(null)}>
                 Đóng
               </button>
-              <button className="btn-primary">Xác nhận</button>
+              <button className="btn-primary" onClick={() => handleDeleteUser(deleteUser)}>
+                Xác nhận
+              </button>
             </div>
           }
         />
