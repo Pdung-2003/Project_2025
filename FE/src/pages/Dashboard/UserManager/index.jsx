@@ -1,12 +1,12 @@
 import AppModal from '@/components/common/AppModal';
 import SearchDebounce from '@/components/common/SearchDebounce';
-import { getUsers } from '@/services/user.service';
+import { deleteUser, getUsers } from '@/services/user.service';
 import { Pencil, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const UserManager = () => {
   const [search, setSearch] = useState('');
-  const [deleteUser, setDeleteUser] = useState(null);
+  const [userDelete, setUserDelete] = useState(null);
   const [userList, setUserList] = useState([]);
 
   const handleDeleteUser = async (id) => {
@@ -16,7 +16,7 @@ const UserManager = () => {
     } catch (error) {
       console.log(error);
     } finally {
-      setDeleteUser(null);
+      setUserDelete(null);
     }
   };
 
@@ -24,7 +24,7 @@ const UserManager = () => {
     const fetchUserList = async () => {
       try {
         const response = await getUsers();
-        setUserList(response.data);
+        setUserList(response.result);
       } catch (error) {
         console.log(error);
       }
@@ -85,7 +85,7 @@ const UserManager = () => {
                     </button>
                     <button
                       className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
-                      onClick={() => setDeleteUser(true)}
+                      onClick={() => setUserDelete(user.id)}
                     >
                       <Trash className="w-4 h-4" />
                     </button>
@@ -111,15 +111,15 @@ const UserManager = () => {
           </div>
         </div>
         <AppModal
-          open={!!deleteUser}
-          onClose={() => setDeleteUser(null)}
+          open={!!userDelete}
+          onClose={() => setUserDelete(null)}
           title="Bạn có chắc chắn muốn xóa người dùng này không?"
           content={
             <div className="flex flex-row justify-end gap-2">
-              <button className="btn-outline-secondary" onClick={() => setDeleteUser(null)}>
+              <button className="btn-outline-secondary" onClick={() => setUserDelete(null)}>
                 Đóng
               </button>
-              <button className="btn-primary" onClick={() => handleDeleteUser(deleteUser)}>
+              <button className="btn-primary" onClick={() => handleDeleteUser(userDelete)}>
                 Xác nhận
               </button>
             </div>
