@@ -2,7 +2,6 @@ package com.devteria.identityservice.entity;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,6 +26,7 @@ public class User {
     private String passwordDigest;
     private String email;
     private String address;
+    private String phoneNumber;
     @Column  // chỉ có Customer và Admin mới có
     private String fullName;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
