@@ -3,9 +3,7 @@ package com.devteria.identityservice.service;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.StringJoiner;
-import java.util.UUID;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -166,32 +164,31 @@ public class AuthenticationService {
 
         if (!(verified && expiryTime.after(new Date()))) throw new AppException(ErrorCode.UNAUTHENTICATED);
 
-        if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID()))
+        if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())){
             throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
 
         return signedJWT;
     }
 
     private String buildScope(User user) {
-        StringJoiner stringJoiner = new StringJoiner(" ");
+        List<String> scopes = new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(user.getRoles())) {
             user.getRoles().forEach(role -> {
                 if (role != null && role.getName() != null) {
-                    stringJoiner.add("ROLE_" + role.getName());
-
-                    if (!CollectionUtils.isEmpty(role.getUserRolePermissions())) {
-                        role.getUserRolePermissions().forEach(rolePermission -> {
-                            if (rolePermission.getPermission() != null && rolePermission.getPermission().getName() != null) {
-                                stringJoiner.add(rolePermission.getPermission().getName());
-                            }
-                        });
-                    }
+                    scopes.add("ROLE_" + role.getName());
                 }
-
+                if (!CollectionUtils.isEmpty(role.getPermissions())) {
+                    role.getPermissions().forEach(permission -> {
+                        if (permission != null && permission.getName() != null) {
+                            scopes.add(permission.getName());
+                        }
+                    });
+                }
             });
         }
 
-        return stringJoiner.toString();
+        return String.join(" ", scopes);
     }
 }
