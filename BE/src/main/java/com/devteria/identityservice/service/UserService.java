@@ -1,6 +1,5 @@
 package com.devteria.identityservice.service;
 
-import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +9,6 @@ import com.devteria.identityservice.entity.Permission;
 import com.devteria.identityservice.entity.UserRolePermission;
 import com.devteria.identityservice.repository.PermissionRepository;
 import com.devteria.identityservice.repository.UserRolePermissionRepository;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -60,6 +58,7 @@ public class UserService {
     private User createAndSaveUser(UserCreationRequest request) {
         User user = userMapper.toUser(request);
         user.setPasswordDigest(passwordEncoder.encode(request.getPassword()));
+        user.setUserRolePermissions(new HashSet<>());
         return userRepository.save(user);
     }
 
@@ -69,6 +68,10 @@ public class UserService {
                 "ADMIN", "Admin Permission",
                 "TOUR_MANAGER", "Tour Manager Permission"
         );
+
+        Set<UserRolePermission> userRolePermissions = user.getUserRolePermissions() != null
+                ? user.getUserRolePermissions()
+                : new HashSet<>();
 
         for (Role role : roles) {
             String requiredPermission = rolePermissionMap.get(role.getName());
@@ -82,6 +85,7 @@ public class UserService {
                         urp.setUser(user);
                         urp.setRole(role);
                         urp.setPermission(permission);
+                        userRolePermissions.add(urp);
                         userRolePermissionRepository.save(urp);
                     });
         }
