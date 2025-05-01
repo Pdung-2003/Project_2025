@@ -11,6 +11,8 @@ import com.devteria.identityservice.entity.User;
 public interface UserRepository extends JpaRepository<User, Long> {  // Sửa kiểu ID thành Long
     boolean existsByUsername(String username);
 
+    boolean existsByEmail(String Email);
+
     Optional<User> findByUsername(String username);
 
     Optional<User> findById(Long id);  // Cập nhật kiểu ID

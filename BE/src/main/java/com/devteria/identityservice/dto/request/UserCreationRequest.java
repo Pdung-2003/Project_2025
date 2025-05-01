@@ -22,12 +22,13 @@ public class UserCreationRequest {
     @Size(min = 6, message = "INVALID_PASSWORD")
     String password;
 
-    String firstName;
-    String lastName;
+    String email;
     String fullName;
     String phoneNumber;
     String address;
+
     @DobConstraint(min = 10, message = "INVALID_DOB")
     LocalDate dob;
-    Set<Long> roles;
+
+    Set<Long> roles; //chỉ có đối với ADMIN
 }

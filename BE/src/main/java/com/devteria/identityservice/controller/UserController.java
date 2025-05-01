@@ -2,19 +2,17 @@ package com.devteria.identityservice.controller;
 
 import java.util.List;
 
-import com.devteria.identityservice.dto.request.UserAdminUpdateRequest;
+import com.devteria.identityservice.dto.request.*;
 import com.devteria.identityservice.dto.response.UserAdminResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
-import com.devteria.identityservice.dto.request.ApiResponse;
-import com.devteria.identityservice.dto.request.UserCreationRequest;
-import com.devteria.identityservice.dto.request.UserUpdateRequest;
 import com.devteria.identityservice.dto.response.UserResponse;
 import com.devteria.identityservice.service.UserService;
 
@@ -31,14 +29,23 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController {
     UserService userService;
 
-    @PostMapping
-    ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
+    @PostMapping("/register")
+    ApiResponse<UserResponse> registerUser(@RequestBody @Valid UserCreationRequest request) {
         return ApiResponse.<UserResponse>builder()
-                .result(userService.createUser(request))  // Giữ nguyên như cũ
+                .result(userService.registerForCustomer(request))
+                .build();
+    }
+
+    @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    ApiResponse<UserAdminResponse> createUserByAdmin(@RequestBody @Valid UserCreationRequest request) {
+        return ApiResponse.<UserAdminResponse>builder()
+                .result(userService.createUserByAdmin(request))
                 .build();
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     ApiResponse<List<UserAdminResponse>> getUsers() {
         return ApiResponse.<List<UserAdminResponse>>builder()
                 .result(userService.getUsers())
@@ -46,6 +53,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable Long userId) {
         log.info("API request get data user with id: {}", userId);
         ApiResponse<UserResponse> apiResponse = ApiResponse.<UserResponse>builder()
@@ -63,6 +71,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     ApiResponse<String> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
         return ApiResponse.<String>builder().result("User has been deleted").build();
@@ -88,6 +97,16 @@ public class UserController {
         log.info("API admin update user with id: {}", userId);
         return ApiResponse.<UserAdminResponse>builder()
                 .result(userService.updateUserByAdmin(userId, request))
+                .build();
+    }
+
+    @PatchMapping("/change-password")
+    ApiResponse<Void> changePassword(@RequestBody ChangePasswordRequest request) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("API change password for user with id: {}", username);
+        userService.changePassword(username, request);
+        return ApiResponse.<Void>builder()
+                .message("Change password successfully")
                 .build();
     }
 }

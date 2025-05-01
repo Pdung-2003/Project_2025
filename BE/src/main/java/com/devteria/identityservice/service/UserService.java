@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.devteria.identityservice.constant.PredefinedRole;
+import com.devteria.identityservice.dto.request.ChangePasswordRequest;
 import com.devteria.identityservice.dto.request.UserAdminUpdateRequest;
 import com.devteria.identityservice.dto.response.UserAdminResponse;
 import com.devteria.identityservice.entity.Permission;
@@ -13,7 +15,6 @@ import com.devteria.identityservice.repository.PermissionRepository;
 import com.devteria.identityservice.repository.UserRolePermissionRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import com.devteria.identityservice.dto.request.UserCreationRequest;
@@ -42,27 +43,38 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional(rollbackFor = Exception.class)
+    public UserResponse registerForCustomer(UserCreationRequest request) {
+        Role role = roleRepository.findByName(PredefinedRole.USER_ROLE).orElseThrow();
+        request.setRoles(Set.of(role.getId()));
+        return userMapper.toUserResponse(createUser(request));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public UserAdminResponse createUserByAdmin(UserCreationRequest request) {
+        return userMapper.toUserAdminResponse(createUser(request));
+    }
+
     // Method to create a new user
-    @Transactional
-    public UserResponse createUser(UserCreationRequest request) {
+    public User createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
-        User user = createAndSaveUser(request);
-        Set<Role> roles = new HashSet<>(roleRepository.findAllById(request.getRoles()));
-        List<Permission> permissions = permissionRepository.findAll();
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }
 
-        assignPermissionsToUser(user, roles, permissions);
-
-        return userMapper.toUserResponse(user);
-    }
-
-    private User createAndSaveUser(UserCreationRequest request) {
         User user = userMapper.toUser(request);
         user.setPasswordDigest(passwordEncoder.encode(request.getPassword()));
         user.setUserRolePermissions(new HashSet<>());
-        return userRepository.save(user);
+        user = userRepository.save(user);
+
+        Set<Role> roles = new HashSet<>(roleRepository.findAllById(request.getRoles()));
+        List<Permission> permissions = permissionRepository.findAll();
+        assignPermissionsToUser(user, roles, permissions);
+
+        return user;
     }
 
     private void assignPermissionsToUser(User user, Set<Role> roles, List<Permission> permissions) {
@@ -95,6 +107,7 @@ public class UserService {
     }
 
     // Get current user information
+    @Transactional(readOnly = true)
     public UserResponse getMyInfo() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = getUser(username);
@@ -131,12 +144,26 @@ public class UserService {
         return userMapper.toUserAdminResponse(userRepository.save(user));
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public void changePassword(String username, ChangePasswordRequest request) {
+        User user = getUser(username);
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPasswordDigest())) {
+            throw new AppException(ErrorCode.INCORRECT_PASSWORD);
+        } else if (request.getNewPassword().equals(request.getOldPassword())) {
+            throw new AppException(ErrorCode.DUPLICATE_PASSWORD);
+        }
+        user.setPasswordDigest(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+    }
+
     // Method to delete user
     @Transactional(rollbackFor = Exception.class)
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }
+
     // Get list of all users
+    @Transactional(readOnly = true)
     public List<UserAdminResponse> getUsers() {
         return userRepository.findAll().stream()
                 .map(userMapper::toUserAdminResponse)
@@ -144,6 +171,7 @@ public class UserService {
     }
 
     // Get a specific user by ID
+    @Transactional(readOnly = true)
     public UserResponse getUserResponseById(Long id) {
         return userMapper.toUserResponse(getUser(id));
     }
