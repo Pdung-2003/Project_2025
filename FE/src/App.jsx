@@ -5,6 +5,7 @@ import HomePage from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import UserManager from './pages/Dashboard/UserManager';
 import DashboardLayout from './layouts/DashboardLayout';
+import Profile from '@/pages/Profile';
 
 function App() {
   return (
@@ -41,6 +42,10 @@ const PUBLIC_ROUTES = [
   {
     path: '/',
     element: HomePage,
+  },
+  {
+    path: '/profile',
+    element: Profile,
   },
 ];
 

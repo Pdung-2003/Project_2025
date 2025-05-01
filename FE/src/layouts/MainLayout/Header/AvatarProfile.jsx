@@ -1,9 +1,11 @@
 import { IMAGE_CONSTANT } from '@/constants/image.constant';
+import { useAuthActions } from '@/hooks/useAuthActions';
 import { LogOut, Truck, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const AvatarProfile = () => {
+  const { logout } = useAuthActions();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -34,7 +36,7 @@ const AvatarProfile = () => {
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
       />
       {isDropdownOpen && (
-        <div className="absolute right-0 mt-2 bg-white shadow-md rounded-lg w-48 z-10 border border-gray-300">
+        <div className="absolute right-0 mt-2 bg-white shadow-md rounded-lg w-48 z-50 border border-gray-300">
           <ul className="space-y-2 p-2 text-sm text-gray-700">
             <li>
               <Link
@@ -52,7 +54,10 @@ const AvatarProfile = () => {
               </Link>
             </li>
             <li>
-              <button className="w-full text-left hover:bg-gray-100 px-2 py-1 text-red-600">
+              <button
+                className="w-full text-left hover:bg-gray-100 px-2 py-1 text-red-600"
+                onClick={logout}
+              >
                 <LogOut className="inline mr-2" />
                 Đăng xuất
               </button>

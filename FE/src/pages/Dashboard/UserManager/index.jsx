@@ -1,18 +1,25 @@
 import AppModal from '@/components/common/AppModal';
 import SearchDebounce from '@/components/common/SearchDebounce';
-import { deleteUser, getUsers } from '@/services/user.service';
+import UserManagerModal from '@/components/user/UserManagerModal';
+import { useUserDispatch, useUserState } from '@/contexts/UserContext';
+import { useUserActions } from '@/hooks/useUserActions';
+import { deleteUser } from '@/services/user.service';
 import { Pencil, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const UserManager = () => {
-  const [search, setSearch] = useState('');
+  const dispatch = useUserDispatch();
+  const { users } = useUserState();
   const [userDelete, setUserDelete] = useState(null);
-  const [userList, setUserList] = useState([]);
+  const [search, setSearch] = useState('');
+  const [userEdit, setUserEdit] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+
+  const { fetchUsers } = useUserActions();
 
   const handleDeleteUser = async (id) => {
     try {
       await deleteUser(id);
-      setUserList(userList.filter((user) => user.id !== id));
     } catch (error) {
       console.log(error);
     } finally {
@@ -21,18 +28,10 @@ const UserManager = () => {
   };
 
   useEffect(() => {
-    const fetchUserList = async () => {
-      try {
-        const response = await getUsers();
-        setUserList(response.result);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchUserList();
+    fetchUsers();
 
     return () => {
-      setUserList([]);
+      dispatch({ type: 'SET_USERS', payload: [] });
     };
   }, []);
 
@@ -55,7 +54,9 @@ const UserManager = () => {
           className="w-full rounded-md p-2 h-full"
         />
         <div className="col-span-4 flex justify-end">
-          <button className="btn-primary">Thêm người dùng</button>
+          <button className="btn-primary" onClick={() => setOpenModal(true)}>
+            Thêm người dùng
+          </button>
         </div>
       </div>
       <div className="flex flex-col flex-1 mx-2 border border-gray-300 h-full overflow-hidden">
@@ -72,7 +73,7 @@ const UserManager = () => {
               </tr>
             </thead>
             <tbody>
-              {userList.map((user, index) => (
+              {users.map((user, index) => (
                 <tr key={user.id} className="hover:bg-gray-50">
                   <td className="border border-gray-300 text-center p-2">{index + 1}</td>
                   <td className="border border-gray-300 p-2">{user.fullName}</td>
@@ -80,7 +81,13 @@ const UserManager = () => {
                   <td className="border border-gray-300 p-2">{user.email}</td>
                   <td className="border border-gray-300 p-2">{user.phoneNumber}</td>
                   <td className="border border-gray-300 p-2 text-center">
-                    <button className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 mr-2">
+                    <button
+                      className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 mr-2"
+                      onClick={() => {
+                        setUserEdit(user.id);
+                        setOpenModal(true);
+                      }}
+                    >
                       <Pencil className="w-4 h-4" />
                     </button>
                     <button
@@ -124,6 +131,14 @@ const UserManager = () => {
               </button>
             </div>
           }
+        />
+        <UserManagerModal
+          open={openModal}
+          onClose={() => {
+            setOpenModal(false);
+            setUserEdit(null);
+          }}
+          userId={userEdit}
         />
       </div>
     </div>

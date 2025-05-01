@@ -1,10 +1,18 @@
 import Header from './Header';
 import Footer from './Footer';
 import PropTypes from 'prop-types';
+import { useAuthActions } from '@/hooks/useAuthActions';
+import { useEffect } from 'react';
 
 const MainLayout = ({ children }) => {
+  const { fetchProfile } = useAuthActions();
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
   return (
-    <div>
+    <div className="h-full w-full">
       <Header />
       {children}
       <Footer />
