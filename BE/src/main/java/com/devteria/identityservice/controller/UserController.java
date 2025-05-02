@@ -109,5 +109,14 @@ public class UserController {
                 .message("Change password successfully")
                 .build();
     }
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @GetMapping("/managers")
+    ApiResponse<List<UserAdminResponse>> getManagers() {
+        log.info("API admin get list manager");
+        return ApiResponse.<List<UserAdminResponse>>builder()
+                .result(userService.getUserWithManagersRole())
+                .build();
+    }
 }
 

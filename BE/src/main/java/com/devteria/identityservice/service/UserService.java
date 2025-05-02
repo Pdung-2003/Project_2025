@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.devteria.identityservice.constant.PredefinedRole;
 import com.devteria.identityservice.dto.request.ChangePasswordRequest;
@@ -174,6 +175,14 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserResponse getUserResponseById(Long id) {
         return userMapper.toUserResponse(getUser(id));
+    }
+
+    public List<UserAdminResponse> getUserWithManagersRole() {
+        Role role = roleRepository.findByName(PredefinedRole.TOUR_MANAGER_ROLE)
+                .orElseThrow();
+
+        List<User> managers = userRepository.findAllUserWithManagerRole(role.getName());
+        return managers.stream().map(userMapper::toUserAdminResponse).toList();
     }
 
     public User getUser(Long userId) {
