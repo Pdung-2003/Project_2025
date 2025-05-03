@@ -42,7 +42,7 @@ const TopBar = () => {
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         />
         {isDropdownOpen && (
-          <div className="absolute right-0 mt-2 bg-white shadow-md rounded-lg w-48 z-10 border border-gray-300">
+          <div className="absolute right-0 mt-2 bg-white shadow-md rounded-lg w-48 z-50 border border-gray-300">
             <ul className="space-y-2 p-2 text-sm text-gray-700">
               <li>
                 <button to={`/order`} className="w-full text-left hover:bg-gray-100 px-2 py-1 flex">

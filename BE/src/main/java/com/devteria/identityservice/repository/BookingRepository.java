@@ -13,7 +13,8 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {  //
     List<Booking> findByCustomerId(Long customerId);
 
     // Tìm kiếm tất cả các booking của một tour
-    List<Booking> findByTourId(Long tourId);
+    //Sửa thành TourId vì ở Model đang khai báo id của model là tourId chứ không có field Id
+    List<Booking> findByTourTourId(Long tourId);
 
     // Tìm kiếm theo bookingId
     Booking findByBookingId(Integer bookingId);

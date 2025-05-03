@@ -28,18 +28,30 @@ public class SecurityConfig {
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
 
+
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+//        httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS)
+//                .permitAll()
+//                .anyRequest()
+//                .authenticated());
+//
+//        httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
+//                        .decoder(customJwtDecoder)
+//                        .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+//                .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
+//        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+//
+//        return httpSecurity.build();
+//    }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS)
-                .permitAll()
-                .anyRequest()
-                .authenticated());
-
-        httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
-                        .decoder(customJwtDecoder)
-                        .jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+        httpSecurity
+                .authorizeHttpRequests(authorize -> authorize
+                        .anyRequest().permitAll() // <-- Cho phép tất cả request, KHÔNG cần login
+                )
+                .csrf(AbstractHttpConfigurer::disable) // disable csrf
+                .oauth2ResourceServer(AbstractHttpConfigurer::disable); // disable luôn oauth2 (jwt, resource server)
 
         return httpSecurity.build();
     }
