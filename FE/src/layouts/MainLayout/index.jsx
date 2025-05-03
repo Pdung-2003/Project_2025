@@ -1,4 +1,3 @@
-import Header from './Header';
 import Footer from './Footer';
 import PropTypes from 'prop-types';
 import { useAuthActions } from '@/hooks/useAuthActions';
