@@ -8,10 +8,13 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
-@Data
+@Builder
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Tour {
@@ -21,32 +24,47 @@ public class Tour {
 
     private String tourCode;
 
+    @Column(nullable = false)
     private String tourName;
 
     private String tourBanner;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
+    private String duration;
+
+    @Column(nullable = false)
+    private String location; // Địa điểm (ví dụ: Đà Nẵng, Paris, Tokyo)
+
+    @Column(nullable = false)
+    private String destination;
+
+    @Column(nullable = false)
     private BigDecimal price;
+
+    @Column(nullable = false)
+    private Integer maxCapacity;
+
+    @Column(nullable = false)
+    private Integer currentBooked = 0;
+
+    private Double discount;
+
+    private LocalDate startDate; // Ngày bắt đầu tour
+
+    private LocalDate endDate; // Ngày kết thúc tour
+
+    private String companyName;  // Tên công ty quản lý tour (Vietravel, Tourexpress, v.v.)
 
     // Liên kết đến User (quản lý tour)
     @ManyToOne
     @JoinColumn(name = "manager_id", referencedColumnName = "id")
     private User manager;  // Người quản lý tour (tham chiếu đến bảng users)
 
-    private String companyName;  // Tên công ty quản lý tour (Vietravel, Tourexpress, v.v.)
-
-    private String location; // Địa điểm (ví dụ: Đà Nẵng, Paris, Tokyo)
-
-    private Integer totalTicket; // Tổng số lượng vé
-
-    private Integer availableTicket; // Số vé còn lại
-
-    private Integer soldTicket;
-
-    private LocalDate startDate; // Ngày bắt đầu tour
-
-    private LocalDate endDate; // Ngày kết thúc tour
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Itinerary> tourItineraries;
 
     @CreationTimestamp
     private Timestamp createdAt;
@@ -54,4 +72,10 @@ public class Tour {
     @UpdateTimestamp
     private Timestamp updatedAt;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    public enum Status {
+        ACTIVE, INACTIVE, CANCELLED
+    }
 }

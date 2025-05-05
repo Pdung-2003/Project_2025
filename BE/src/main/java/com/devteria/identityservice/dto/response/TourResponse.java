@@ -6,20 +6,20 @@ import java.time.LocalDate;
 
 @Data
 public class TourResponse {
-    private Long tourId; // `Long` thay vì `Integer` để phù hợp với kiểu dữ liệu của tourId trong Entity
+    private Long tourId;
     private String tourCode;
     private String tourName;
     private String tourBanner;
     private String description;
-    private Double price;
-    private Long managerId;
-    private String companyName;
+    private String duration; // Ví dụ: 3N2Đ
     private String location;
-    private Integer totalTicket;
-    private Integer availableTicket;
-    private Integer soldTicket;
+    private String destination;
+    private Double price;
+    private Double discount;
+    private String companyName;
+    private Integer maxCapacity;
+    private Integer currentBooked;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String createdAt;
-    private String updatedAt;
+    private ManagerDataResponse manager;
 }

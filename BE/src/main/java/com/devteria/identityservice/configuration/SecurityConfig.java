@@ -1,7 +1,6 @@
 package com.devteria.identityservice.configuration;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -25,17 +24,19 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {
         "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
-        "/users/register"
+        "/users/register",
+        "/api/tours/search",
     };
 
     private final CustomJwtDecoder customJwtDecoder;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(PUBLIC_ENDPOINTS)
-                .permitAll()
-                .anyRequest()
-                .authenticated());
+        httpSecurity.authorizeHttpRequests(request -> request
+                .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/tours/{tourId}").permitAll()
+
+                .anyRequest().authenticated());
 
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
                         .decoder(customJwtDecoder)
