@@ -25,16 +25,22 @@ public class TourService {
     private UserRepository userRepository;
 
     // Tạo mới tour
-    public TourResponse createTour(TourRequest tourRequest) {
+    public TourResponse createTour(TourRequest tourRequest,String imageUrl) {
         Tour tour = tourMapper.toEntity(tourRequest);
 
         // Lấy manager từ UserRepository dựa trên managerId trong DTO
         tour.setManager(userRepository.findById(tourRequest.getManagerId())
                 .orElseThrow(() -> new RuntimeException("Manager not found")));
-
+        tour.setTourBanner(imageUrl);
         tour = tourRepository.save(tour);
         return tourMapper.toResponse(tour);
     }
+    public TourResponse getTourById(Long id) {
+        Tour tour = tourRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tour not found"));
+        return tourMapper.toResponse(tour);
+    }
+
 
     // Lấy tour theo managerId
     public List<TourResponse> getToursByManagerId(Long managerId) {

@@ -2,11 +2,13 @@ package com.devteria.identityservice.controller;
 
 import com.devteria.identityservice.dto.request.TourRequest;
 import com.devteria.identityservice.dto.response.TourResponse;
+import com.devteria.identityservice.service.CloudinaryService;
 import com.devteria.identityservice.service.TourService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -15,13 +17,16 @@ public class TourController {
 
     @Autowired
     private TourService tourService;
-
+    @Autowired
+    private CloudinaryService cloudinaryService;
     // Tạo tour mới
     @PostMapping
-    public ResponseEntity<TourResponse> createTour(@RequestBody TourRequest tourRequest) {
-        TourResponse tourResponse = tourService.createTour(tourRequest);
+    public ResponseEntity<TourResponse> createTour(@ModelAttribute TourRequest request) throws IOException {
+        String imageUrl = cloudinaryService.upload(request.getTourBanner());
+        TourResponse tourResponse = tourService.createTour(request, imageUrl);
         return ResponseEntity.ok(tourResponse);
     }
+
 
     // Lấy tất cả các tour
     @GetMapping
@@ -38,9 +43,9 @@ public class TourController {
     // Lấy tour theo tourId
     @GetMapping("/{tourId}")
     public ResponseEntity<TourResponse> getTour(@PathVariable Long tourId) {
-        TourResponse tourResponse = tourService.getToursByManagerId(tourId).get(0); // Lấy theo tourId, nếu không tìm thấy sẽ trả lỗi
-        return ResponseEntity.ok(tourResponse);
+        return ResponseEntity.ok(tourService.getTourById(tourId));
     }
+
 
     // Lấy tất cả các tour theo managerId
     @GetMapping("/manager/{managerId}")
