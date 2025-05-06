@@ -16,10 +16,15 @@ spring:
     show-sql: true
 jwt:
   signerKey: "x5N/IYQDk/BvPC2XWv7xE2TdU2YlZsewgbUOvN3/m71lrjo74knXkebs4jSmEjjQ"
-  valid-duration: 5 # in seconds
-  refreshable-duration: 120  # in seconds
+  valid-duration: 3000 # in seconds
+  refreshable-duration: 72000 # in seconds
   logging:
     level:
       org.springframework: DEBUG
       com.devteria: DEBUG
 
+#cloudinary
+cloudinary:
+  cloud-name: ${CLOUDINARY_NAME:deq6qkrq5}
+  api-key: ${CLOUDINARY_KEY:351231857363369}
+  api-secret: ${CLOUDINARY_SECRET:v3FDad5YAriUwrH6NT0LVneav3k}
