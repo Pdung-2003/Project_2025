@@ -12,8 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.io.IOException;
 
 @Slf4j(topic = "Tour-Controller")
 @RestController
@@ -26,8 +27,10 @@ public class TourController {
     // Tạo tour mới
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<ApiResponse<TourResponse>> createTour(@RequestBody TourRequest tourRequest) {
-        TourResponse tourResponse = tourService.createTour(tourRequest);
+    public ResponseEntity<ApiResponse<TourResponse>> createTour(@RequestPart(name = "tour") TourRequest tourRequest,
+                                                                @RequestPart(name = "banner") MultipartFile file
+    ) {
+        TourResponse tourResponse = tourService.createTour(tourRequest, file);
         return ResponseEntity.ok().body(
                 ApiResponse.<TourResponse>builder()
                         .result(tourResponse)
@@ -38,8 +41,11 @@ public class TourController {
     // Cập nhật tour
     @PutMapping("/{tourId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<TourResponse> updateTour(@PathVariable Long tourId, @RequestBody TourRequest tourRequest) {
-        TourResponse updatedTour = tourService.updateTour(tourId, tourRequest);
+    public ResponseEntity<TourResponse> updateTour(@PathVariable Long tourId,
+                                                   @RequestPart(name = "tour", required = false) TourRequest tourRequest,
+                                                   @RequestPart(name = "banner", required = false) MultipartFile file
+    ) {
+        TourResponse updatedTour = tourService.updateTour(tourId, tourRequest, file);
         return ResponseEntity.ok(updatedTour);
     }
 

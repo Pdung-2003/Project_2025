@@ -27,6 +27,7 @@ public class Tour {
     @Column(nullable = false)
     private String tourName;
 
+    @Column(length = 4096)
     private String tourBanner;
 
     @Column(columnDefinition = "TEXT")
@@ -34,10 +35,10 @@ public class Tour {
 
     private String duration;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 4096)
     private String location; // Địa điểm (ví dụ: Đà Nẵng, Paris, Tokyo)
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 4096)
     private String destination;
 
     @Column(nullable = false)
@@ -55,6 +56,7 @@ public class Tour {
 
     private LocalDate endDate; // Ngày kết thúc tour
 
+    @Column(length = 2048)
     private String companyName;  // Tên công ty quản lý tour (Vietravel, Tourexpress, v.v.)
 
     // Liên kết đến User (quản lý tour)

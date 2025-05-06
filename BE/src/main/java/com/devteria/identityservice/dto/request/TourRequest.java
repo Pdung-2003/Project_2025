@@ -10,7 +10,7 @@ import java.time.LocalDate;
 public class TourRequest {
     private String tourCode;
     private String tourName;
-    private String tourBanner;
+    //private String tourBanner;
     private String description;
     private String duration; // Ví dụ: 3N2Đ
     private String location;

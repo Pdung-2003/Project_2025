@@ -9,18 +9,14 @@ import com.devteria.identityservice.exception.AppException;
 import com.devteria.identityservice.exception.ErrorCode;
 import com.devteria.identityservice.mapper.TourMapper;
 import com.devteria.identityservice.repository.TourRepository;
-import com.devteria.identityservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -29,16 +25,22 @@ public class TourService {
     private final TourRepository tourRepository;
     private final TourMapper tourMapper;
     private final UserService userService;
+    private final CloudinaryService cloudinaryService;
 
     // Tạo mới tour
     @Transactional(rollbackFor = Exception.class)
-    public TourResponse createTour(TourRequest request) {
+    public TourResponse createTour(TourRequest request, MultipartFile file) {
         Tour tour = tourMapper.toEntity(request);
-
         User manager = userService.getUser(request.getManagerId());
         tour.setManager(manager);
         tour.setStatus(Tour.Status.ACTIVE);
 
+        String fileName = file.getOriginalFilename();
+        if (fileName != null && fileName.contains(".")) {
+            fileName = fileName.substring(0, fileName.lastIndexOf("."));
+        }
+        String bannerUrl = cloudinaryService.uploadFile(file, "tour-banner", fileName);
+        tour.setTourBanner(bannerUrl);
         tour = tourRepository.save(tour);
         return tourMapper.toResponse(tour);
     }
@@ -54,18 +56,41 @@ public class TourService {
         return tourMapper.toResponse(tour);
     }
 
-    // Cập nhật tour
-    @Transactional(rollbackFor = Exception.class)
-    public TourResponse updateTour(Long tourId, TourRequest tourRequest) {
+    public TourResponse updateTour(Long tourId, TourRequest tourRequest, MultipartFile file) {
         Tour existingTour = getTour(tourId);
+        if(tourRequest != null) {
+            existingTour = updateTourData(existingTour, tourRequest);
+        }
+        if (!file.isEmpty()) {
+            existingTour = updateTourBanner(file, existingTour);
+        }
+        return tourMapper.toResponse(tourRepository.save(existingTour));
+    }
+
+    // Cập nhật tour
+    public Tour updateTourData(Tour existingTour, TourRequest tourRequest) {
+
         existingTour = tourMapper.updateTour(tourRequest, existingTour);
 
         if (!existingTour.getManager().getId().equals(tourRequest.getManagerId())) {
             User manager = userService.getUser(tourRequest.getManagerId());
             existingTour.setManager(manager);
         }
+        return existingTour;
+    }
 
-        return tourMapper.toResponse(tourRepository.save(existingTour));
+    private Tour updateTourBanner(MultipartFile file, Tour existingTour) {
+        String oldBannerUrl = existingTour.getTourBanner();
+        String fileName = file.getOriginalFilename();
+        if (fileName != null && fileName.contains(".")) {
+            fileName = fileName.substring(0, fileName.lastIndexOf("."));
+
+        }
+        String bannerUrl = cloudinaryService.uploadFile(file, "tour-banner", fileName);
+        existingTour.setTourBanner(bannerUrl);
+        cloudinaryService.deleteFile(oldBannerUrl);
+
+        return existingTour;
     }
 
     public Page<TourResponse> searchTour(TourFilterRequest request) {

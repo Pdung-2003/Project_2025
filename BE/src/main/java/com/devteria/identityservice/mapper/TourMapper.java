@@ -20,7 +20,6 @@ public interface TourMapper {
     default Tour updateTour(TourRequest request, Tour existTour) {
         existTour.setTourCode(request.getTourCode());
         existTour.setTourName(request.getTourName());
-        existTour.setTourBanner(request.getTourBanner());
         existTour.setDescription(request.getDescription());
         existTour.setDuration(request.getDuration());
         existTour.setLocation(request.getLocation());
