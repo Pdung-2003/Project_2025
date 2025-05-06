@@ -35,6 +35,8 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(request -> request
                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/tours/{tourId}").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/itineraries/{itineraryId}").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/itineraries/tour/{tourId}").permitAll()
 
                 .anyRequest().authenticated());
 
