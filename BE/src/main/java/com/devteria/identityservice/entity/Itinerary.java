@@ -1,17 +1,17 @@
 package com.devteria.identityservice.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
 
 @Entity
-@Data
+@Builder
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Itinerary {
@@ -19,15 +19,21 @@ public class Itinerary {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer itineraryId;
 
-    @ManyToOne
-    @JoinColumn(name = "tour_id", referencedColumnName = "tourId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tour_id",nullable = false)
+    @ToString.Exclude
     private Tour tour;  // Tham chiếu đến bảng Tours
 
     @Column(nullable = false)
-    private LocalDate date;  // Ngày của lịch trình
+    private Integer dayNumber;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1024)
+    private String title;
+
+    @Column(nullable = false, columnDefinition = "TEXT", name = "activity_description")
     private String activityDescription;  // Mô tả hoạt động trong lịch trình
+
+    private String location;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
