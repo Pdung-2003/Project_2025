@@ -23,6 +23,9 @@ public enum ErrorCode {
     PERMISSION_NOT_EXISTED(1010, "Permission not existed", HttpStatus.NOT_FOUND),
     TOUR_NOT_EXISTED(1011, "Tour not found", HttpStatus.NOT_FOUND),
     BOOKING_NOT_EXISTED(1011, "Booking not existed", HttpStatus.NOT_FOUND),
+    UPLOAD_FILE_FAILED(1012, "Upload file failed", HttpStatus.BAD_REQUEST),
+    DAY_NUMBER_ITINERARY_EXISTED(1013, "Day number of tour existed", HttpStatus.BAD_REQUEST),
+    DAY_NUMBER_INVALID(1014, "Invalid day number of tour", HttpStatus.BAD_REQUEST)
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
