@@ -27,6 +27,7 @@ public class User {
     private String passwordDigest;
     private String email;
     private String address;
+    private String phoneNumber;
     @Column  // chỉ có Customer và Admin mới có
     private String fullName;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -36,10 +37,10 @@ public class User {
     private LocalDate birthDate;
 
     @CreationTimestamp
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
 
     public Set<Role> getRoles() {
         return userRolePermissions.stream()

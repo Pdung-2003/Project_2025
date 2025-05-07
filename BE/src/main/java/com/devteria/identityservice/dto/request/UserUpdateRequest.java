@@ -1,10 +1,9 @@
 package com.devteria.identityservice.dto.request;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
 
 import com.devteria.identityservice.validator.DobConstraint;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -14,11 +13,15 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserUpdateRequest {
-    String password;
     String firstName;
     String lastName;
+
+    @NotBlank
     String fullName;
     String phoneNumber;
+
+    @DobConstraint(min = 10, message = "INVALID_DOB")
+    LocalDate dob;
+
     String address;
-    Set<Long> roles;
 }

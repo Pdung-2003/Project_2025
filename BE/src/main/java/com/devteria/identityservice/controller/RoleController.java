@@ -2,6 +2,7 @@ package com.devteria.identityservice.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.devteria.identityservice.dto.request.ApiResponse;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class RoleController {
     RoleService roleService;
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping
     ApiResponse<RoleResponse> create(@RequestBody RoleRequest request) {
         return ApiResponse.<RoleResponse>builder()
@@ -29,6 +31,7 @@ public class RoleController {
                 .build();
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping
     ApiResponse<List<RoleResponse>> getAll() {
         return ApiResponse.<List<RoleResponse>>builder()
@@ -36,8 +39,9 @@ public class RoleController {
                 .build();
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/{roleId}")
-    ApiResponse<Void> delete(@PathVariable Long roleId) {  // Sử dụng Long thay vì String
+    ApiResponse<Void> delete(@PathVariable Long roleId) {
         roleService.delete(roleId);
         return ApiResponse.<Void>builder().build();
     }

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Xác nhận đặt tour</title>
+    <style>
+        body { font-family: Arial, sans-serif; color: #333; line-height: 1.6; }
+        .container { max-width: 800px; margin: auto; padding: 20px; }
+        .header { border-bottom: 2px solid #ccc; padding-bottom: 10px; }
+        .section { margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 8px 12px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #f5f5f5; }
+        .total { font-weight: bold; color: red; font-size: 18px; }
+        .note { font-size: 13px; color: #888; }
+        .footer { margin-top: 30px; font-size: 14px; }
+        .highlight { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <p>Xin chào quý khách <strong th:text="${customerName}">Nguyễn Ngọc Thạch</strong>,</p>
+        <p>Yêu cầu đặt chỗ của Quý khách đã được gửi tới <strong>BestPrice.vn</strong>. Nhân viên của chúng tôi sẽ kiểm tra tình trạng chỗ và liên hệ với Quý khách trong thời gian sớm nhất.</p>
+        <p>Mã đơn hàng: <span class="highlight" th:text="${bookingCode}">918307</span> (Dùng để xác nhận đơn hàng)</p>
+    </div>
+
+    <div class="section">
+        <h3>Thông tin liên hệ</h3>
+        <p>Họ và tên: <span th:text="${customerName}"></span></p>
+        <p>Email: <span th:text="${email}"></span></p>
+        <p>Điện thoại: <span th:text="${phone}"></span></p>
+    </div>
+
+    <div class="section">
+        <h3>Thông tin đặt tour</h3>
+        <p><strong>Tour du lịch:</strong> <span th:text="${tourName}"></span></p>
+        <p><strong>Địa điểm:</strong> <span th:text="${location}"></span></p>
+        <p><strong>Thời gian khởi hành:</strong> <span th:text="${startDate}"></span></p>
+        <p><strong>Số lượng khách:</strong> <span th:text="${numAdults}"></span> Người lớn</p>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Hạng tour</th>
+                <th>1 Người lớn</th>
+                <th>Phụ thu phòng đơn</th>
+                <th>Tổng tiền</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td th:text="${tourType}">Tour hằng ngày</td>
+                <td th:text="${adultPrice}">730.000đ</td>
+                <td>0 đ</td>
+                <td th:text="${subtotal}">730.000đ</td>
+            </tr>
+            <tr>
+                <td colspan="3">Sử dụng điểm:</td>
+                <td th:text="${discount}">-50.000đ</td>
+            </tr>
+            <tr>
+                <td colspan="3" class="total">Tổng tiền:</td>
+                <td class="total" th:text="${total}">680.000đ</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h3>Quy định của tour</h3>
+        <p><strong>Thời gian khởi hành:</strong> <span th:text="${startDate}"></span></p>
+        <p><strong>Thời gian về:</strong> <span th:text="${endDate}">Trong ngày</span></p>
+        <p><strong>Chính sách huỷ:</strong> Khách hàng đặt dịch vụ sẽ không được quyền hoàn dịch vụ, hãy đặt dịch vụ.</p>
+
+<!--        <h4>Trẻ em đi kèm:</h4>-->
+<!--        <table>-->
+<!--            <tr><td>Trẻ em dưới 4 tuổi</td><td>Miễn phí, tính 50% giá tour nếu yêu cầu chỗ ngồi riêng</td></tr>-->
+<!--            <tr><td>Trẻ em từ 4 đến 8 tuổi</td><td>Tính 85% giá tour</td></tr>-->
+<!--            <tr><td>Trẻ em từ 9 tuổi trở lên</td><td>Tính như người lớn</td></tr>-->
+<!--        </table>-->
+    </div>
+
+    <div class="footer">
+        <p><strong>CÔNG TY DU LỊCH BESTPRICE</strong></p>
+        <p>Hotline: 1900 2605</p>
+        <p>Website: <a href="https://www.bestprice.vn">www.bestprice.vn</a></p>
+        <p>Hà Nội: 57 Trần Quốc Toản, P. Trần Hưng Đạo, Quận Hoàn Kiếm</p>
+        <p>TP HCM: 21 Bùi Thị Xuân, P. Bến Thành, Quận 1</p>
+    </div>
+</div>
+</body>
+</html>

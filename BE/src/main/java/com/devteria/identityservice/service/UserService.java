@@ -1,16 +1,19 @@
 package com.devteria.identityservice.service;
 
-import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.devteria.identityservice.constant.PredefinedRole;
+import com.devteria.identityservice.dto.request.ChangePasswordRequest;
+import com.devteria.identityservice.dto.request.UserAdminUpdateRequest;
+import com.devteria.identityservice.dto.response.UserAdminResponse;
 import com.devteria.identityservice.entity.Permission;
 import com.devteria.identityservice.entity.UserRolePermission;
 import com.devteria.identityservice.repository.PermissionRepository;
 import com.devteria.identityservice.repository.UserRolePermissionRepository;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,34 +44,50 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional(rollbackFor = Exception.class)
+    public UserResponse registerForCustomer(UserCreationRequest request) {
+        Role role = roleRepository.findByName(PredefinedRole.USER_ROLE).orElseThrow();
+        request.setRoles(Set.of(role.getId()));
+        return userMapper.toUserResponse(createUser(request));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public UserAdminResponse createUserByAdmin(UserCreationRequest request) {
+        return userMapper.toUserAdminResponse(createUser(request));
+    }
+
     // Method to create a new user
-    @Transactional
-    public UserResponse createUser(UserCreationRequest request) {
+    public User createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
-        User user = createAndSaveUser(request);
-        Set<Role> roles = new HashSet<>(roleRepository.findAllById(request.getRoles()));
-        List<Permission> permissions = permissionRepository.findAll();
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }
 
-        assignPermissionsToUser(user, roles, permissions);
-
-        return userMapper.toUserResponse(user);
-    }
-
-    private User createAndSaveUser(UserCreationRequest request) {
         User user = userMapper.toUser(request);
         user.setPasswordDigest(passwordEncoder.encode(request.getPassword()));
-        return userRepository.save(user);
+        user.setUserRolePermissions(new HashSet<>());
+        user = userRepository.save(user);
+
+        Set<Role> roles = new HashSet<>(roleRepository.findAllById(request.getRoles()));
+        List<Permission> permissions = permissionRepository.findAll();
+        assignPermissionsToUser(user, roles, permissions);
+
+        return user;
     }
 
     private void assignPermissionsToUser(User user, Set<Role> roles, List<Permission> permissions) {
         Map<String, String> rolePermissionMap = Map.of(
-                "USER", "User Permission",
-                "ADMIN", "Admin Permission",
-                "TOUR_MANAGER", "Tour Manager Permission"
+                "USER", "PERMISSION_USER",
+                "ADMIN", "PERMISSION_ADMIN",
+                "TOUR_MANAGER", "PERMISSION_TOUR_MANAGER"
         );
+
+        Set<UserRolePermission> userRolePermissions = user.getUserRolePermissions() != null
+                ? user.getUserRolePermissions()
+                : new HashSet<>();
 
         for (Role role : roles) {
             String requiredPermission = rolePermissionMap.get(role.getName());
@@ -82,59 +101,98 @@ public class UserService {
                         urp.setUser(user);
                         urp.setRole(role);
                         urp.setPermission(permission);
+                        userRolePermissions.add(urp);
                         userRolePermissionRepository.save(urp);
                     });
         }
     }
 
     // Get current user information
+    @Transactional(readOnly = true)
     public UserResponse getMyInfo() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User user = getUser(username);
 
         return userMapper.toUserResponse(user);
     }
 
     // Method to update user information
-    public UserResponse updateUser(Long userId, UserUpdateRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+    @Transactional(rollbackFor = Exception.class)
+    public UserResponse updateCurrentUser(UserUpdateRequest request, String username) {
+        User user = getUser(username);
+        user = userMapper.toUserByUpdateRequest(request, user);
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
 
-        userMapper.updateUser(user, request);
-        user.setPasswordDigest(passwordEncoder.encode(request.getPassword()));
+    @Transactional(rollbackFor = Exception.class)
+    public UserAdminResponse updateUserByAdmin(Long userId, UserAdminUpdateRequest request) {
+       User user = getUser(userId);
+       user = userMapper.toUserByAdminUpdateRequest(request, user);
 
-        // Update roles using UserRolePermission
         HashSet<Role> roles = new HashSet<>(roleRepository.findAllById(request.getRoles()));
-        // You can clear existing roles and add new ones
-        userRolePermissionRepository.deleteByUser(user);
+        userRolePermissionRepository.deleteByUserId(user.getId());
 
         for (Role role : roles) {
             UserRolePermission userRolePermission = new UserRolePermission();
             userRolePermission.setUser(user);
             userRolePermission.setRole(role);
+            userRolePermission.setPermission(
+                    permissionRepository.findByName("PERMISSION_" + role.getName()).orElseThrow()
+            );
             userRolePermissionRepository.save(userRolePermission);
         }
 
-        return userMapper.toUserResponse(userRepository.save(user));
+        return userMapper.toUserAdminResponse(userRepository.save(user));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void changePassword(String username, ChangePasswordRequest request) {
+        User user = getUser(username);
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPasswordDigest())) {
+            throw new AppException(ErrorCode.INCORRECT_PASSWORD);
+        } else if (request.getNewPassword().equals(request.getOldPassword())) {
+            throw new AppException(ErrorCode.DUPLICATE_PASSWORD);
+        }
+        user.setPasswordDigest(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
     }
 
     // Method to delete user
+    @Transactional(rollbackFor = Exception.class)
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }
+
     // Get list of all users
-    public List<UserResponse> getUsers() {
+    @Transactional(readOnly = true)
+    public List<UserAdminResponse> getUsers() {
         return userRepository.findAll().stream()
-                .map(userMapper::toUserResponse)
+                .map(userMapper::toUserAdminResponse)
                 .toList();
     }
 
     // Get a specific user by ID
-    public UserResponse getUser(Long id) {
-        User user = userRepository.findById(id)
+    @Transactional(readOnly = true)
+    public UserResponse getUserResponseById(Long id) {
+        return userMapper.toUserResponse(getUser(id));
+    }
+
+    public List<UserAdminResponse> getUserWithManagersRole() {
+        Role role = roleRepository.findByName(PredefinedRole.TOUR_MANAGER_ROLE)
+                .orElseThrow();
+
+        List<User> managers = userRepository.findAllUserWithManagerRole(role.getName());
+        return managers.stream().map(userMapper::toUserAdminResponse).toList();
+    }
+
+    public User getUser(Long userId) {
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        return userMapper.toUserResponse(user);
+    }
+
+    public User getUser(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
     }
 }
 

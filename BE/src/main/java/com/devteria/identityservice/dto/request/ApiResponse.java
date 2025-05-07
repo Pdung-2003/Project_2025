@@ -1,5 +1,6 @@
 package com.devteria.identityservice.dto.request;
 
+import com.devteria.identityservice.dto.response.PaginationResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.*;
@@ -17,4 +18,5 @@ public class ApiResponse<T> {
 
     private String message;
     private T result;
+    private PaginationResponse pagination;
 }

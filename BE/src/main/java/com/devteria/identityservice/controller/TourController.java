@@ -1,70 +1,90 @@
 package com.devteria.identityservice.controller;
 
+import com.devteria.identityservice.dto.request.ApiResponse;
+import com.devteria.identityservice.dto.request.TourFilterRequest;
 import com.devteria.identityservice.dto.request.TourRequest;
+import com.devteria.identityservice.dto.response.PaginationResponse;
 import com.devteria.identityservice.dto.response.TourResponse;
 import com.devteria.identityservice.service.TourService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.io.IOException;
 
+@Slf4j(topic = "Tour-Controller")
 @RestController
 @RequestMapping("/api/tours")
+@RequiredArgsConstructor
 public class TourController {
 
-    @Autowired
-    private TourService tourService;
+    private final TourService tourService;
 
     // Tạo tour mới
     @PostMapping
-    public ResponseEntity<TourResponse> createTour(@RequestBody TourRequest tourRequest) {
-        TourResponse tourResponse = tourService.createTour(tourRequest);
-        return ResponseEntity.ok(tourResponse);
-    }
-
-    // Lấy tất cả các tour
-    @GetMapping
-    public ResponseEntity<List<TourResponse>> getTours(@RequestParam(required = false) Long managerId) {
-        List<TourResponse> tours;
-        if (managerId != null) {
-            tours = tourService.getToursByManagerId(managerId);
-        } else {
-            tours = tourService.getAllTours(); // Nếu không có managerId, lấy tất cả các tour
-        }
-        return ResponseEntity.ok(tours);
-    }
-
-    // Lấy tour theo tourId
-    @GetMapping("/{tourId}")
-    public ResponseEntity<TourResponse> getTour(@PathVariable Long tourId) {
-        TourResponse tourResponse = tourService.getToursByManagerId(tourId).get(0); // Lấy theo tourId, nếu không tìm thấy sẽ trả lỗi
-        return ResponseEntity.ok(tourResponse);
-    }
-
-    // Lấy tất cả các tour theo managerId
-    @GetMapping("/manager/{managerId}")
-    public ResponseEntity<List<TourResponse>> getToursByManagerId(@PathVariable Long managerId) {
-        List<TourResponse> tours = tourService.getToursByManagerId(managerId);
-        return ResponseEntity.ok(tours);
-    }
-
-    // Lấy tất cả các tour theo companyName
-    @GetMapping("/company/{companyName}")
-    public ResponseEntity<List<TourResponse>> getToursByCompanyName(@PathVariable String companyName) {
-        List<TourResponse> tours = tourService.getToursByCompanyName(companyName);
-        return ResponseEntity.ok(tours);
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<ApiResponse<TourResponse>> createTour(@RequestPart(name = "tour") TourRequest tourRequest,
+                                                                @RequestPart(name = "banner") MultipartFile file
+    ) {
+        TourResponse tourResponse = tourService.createTour(tourRequest, file);
+        return ResponseEntity.ok().body(
+                ApiResponse.<TourResponse>builder()
+                        .result(tourResponse)
+                        .build()
+        );
     }
 
     // Cập nhật tour
     @PutMapping("/{tourId}")
-    public ResponseEntity<TourResponse> updateTour(@PathVariable Long tourId, @RequestBody TourRequest tourRequest) {
-        TourResponse updatedTour = tourService.updateTour(tourId, tourRequest);
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<TourResponse> updateTour(@PathVariable Long tourId,
+                                                   @RequestPart(name = "tour", required = false) TourRequest tourRequest,
+                                                   @RequestPart(name = "banner", required = false) MultipartFile file
+    ) {
+        TourResponse updatedTour = tourService.updateTour(tourId, tourRequest, file);
         return ResponseEntity.ok(updatedTour);
     }
 
-    // Xóa tour
+    //Lấy tất cả các tour
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<?>> getTours(@RequestBody TourFilterRequest filterRequest) {
+        log.info("API search tour with request: {}", filterRequest);
+        Page<TourResponse> tours = tourService.searchTour(filterRequest);
+        ApiResponse<?> apiResponse = ApiResponse.builder()
+                .result(tours.getContent())
+                .pagination(
+                        PaginationResponse.builder()
+                                .page(1)
+                                .size(10)
+                                .totalElements(tours.getTotalElements())
+                                .totalPages(tours.getTotalPages())
+                                .isFirst(tours.isFirst())
+                                .hasNext(tours.hasNext())
+                                .build()
+                )
+                .build();
+
+        return ResponseEntity.ok().body(apiResponse);
+    }
+
+    // Lấy tour theo tourId
+    @GetMapping("/{tourId}")
+    public ResponseEntity<ApiResponse<TourResponse>> getTour(@PathVariable Long tourId) {
+        TourResponse tourResponse = tourService.getTourById(tourId);
+        return ResponseEntity.ok().body(
+                ApiResponse.<TourResponse>builder()
+                        .result(tourResponse)
+                        .build()
+        );
+    }
+
+     //Xóa tour
     @DeleteMapping("/{tourId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteTour(@PathVariable Long tourId) {
         tourService.deleteTour(tourId);
         return ResponseEntity.noContent().build();

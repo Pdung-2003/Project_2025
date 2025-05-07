@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -37,8 +38,8 @@ public class Feedback {
 
     @CreationTimestamp
     @Column(updatable = false)
-    private Timestamp createdAt;  // Thời gian tạo
+    private LocalDateTime createdAt;  // Thời gian tạo
 
     @UpdateTimestamp
-    private Timestamp updatedAt;  // Thời gian cập nhật
+    private LocalDateTime updatedAt;  // Thời gian cập nhật
 }
