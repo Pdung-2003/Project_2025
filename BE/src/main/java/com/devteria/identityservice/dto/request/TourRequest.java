@@ -20,7 +20,6 @@ public class TourRequest {
     private Long managerId; // managerId để ánh xạ với User entity
     private String companyName;
     private Integer maxCapacity;
-    private Integer currentBooked;
     private LocalDate startDate;
     private LocalDate endDate;
     private Tour.Status status;

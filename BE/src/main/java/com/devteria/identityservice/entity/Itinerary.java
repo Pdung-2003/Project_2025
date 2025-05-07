@@ -5,7 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Builder
@@ -37,9 +37,9 @@ public class Itinerary {
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
-    private Timestamp createdAt;  // Thời gian tạo
+    private LocalDateTime createdAt;  // Thời gian tạo
 
     @Column(nullable = false)
     @UpdateTimestamp
-    private Timestamp updatedAt;  // Thời gian cập nhật
+    private LocalDateTime updatedAt;  // Thời gian cập nhật
 }

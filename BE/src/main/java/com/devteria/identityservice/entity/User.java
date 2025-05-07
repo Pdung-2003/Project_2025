@@ -2,6 +2,7 @@ package com.devteria.identityservice.entity;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,10 +37,10 @@ public class User {
     private LocalDate birthDate;
 
     @CreationTimestamp
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
 
     public Set<Role> getRoles() {
         return userRolePermissions.stream()

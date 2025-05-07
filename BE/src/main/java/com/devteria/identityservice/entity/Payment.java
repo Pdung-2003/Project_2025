@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -20,7 +21,7 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer paymentId;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "booking_id", nullable = false)
     private Booking booking;
 
@@ -43,17 +44,16 @@ public class Payment {
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
     @UpdateTimestamp
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
 
     public enum PaymentMethod {
         CREDIT_CARD,
         PAYPAL,
         BANK_TRANSFER,
-        ZALOPAY
     }
 
     public enum PaymentStatus {

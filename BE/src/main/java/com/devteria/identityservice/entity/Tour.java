@@ -6,8 +6,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -50,7 +50,9 @@ public class Tour {
     @Column(nullable = false)
     private Integer currentBooked = 0;
 
-    private Double discount;
+    private Integer availableTicket;
+
+    private Double discount = 0.0;
 
     private LocalDate startDate; // Ngày bắt đầu tour
 
@@ -69,10 +71,10 @@ public class Tour {
     private List<Itinerary> tourItineraries;
 
     @CreationTimestamp
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
     private Status status;

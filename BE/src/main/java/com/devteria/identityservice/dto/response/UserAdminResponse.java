@@ -5,8 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Builder
@@ -21,7 +21,7 @@ public class UserAdminResponse {
     private String phoneNumber;
     private String address;
     private LocalDate dateOfBirth;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private Set<RoleResponse> roles;
 }

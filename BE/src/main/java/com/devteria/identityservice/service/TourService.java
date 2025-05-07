@@ -6,6 +6,7 @@ import com.devteria.identityservice.dto.response.TourResponse;
 import com.devteria.identityservice.entity.Tour;
 import com.devteria.identityservice.entity.User;
 import com.devteria.identityservice.exception.AppException;
+import com.devteria.identityservice.exception.BadRequestException;
 import com.devteria.identityservice.exception.ErrorCode;
 import com.devteria.identityservice.mapper.TourMapper;
 import com.devteria.identityservice.repository.TourRepository;
@@ -34,6 +35,7 @@ public class TourService {
         User manager = userService.getUser(request.getManagerId());
         tour.setManager(manager);
         tour.setStatus(Tour.Status.ACTIVE);
+        tour.setAvailableTicket(request.getMaxCapacity());
 
         String fileName = file.getOriginalFilename();
         if (fileName != null && fileName.contains(".")) {
@@ -56,6 +58,7 @@ public class TourService {
         return tourMapper.toResponse(tour);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public TourResponse updateTour(Long tourId, TourRequest tourRequest, MultipartFile file) {
         Tour existingTour = getTour(tourId);
         if(tourRequest != null) {
@@ -122,5 +125,15 @@ public class TourService {
     // Xóa tour
     public void deleteTour(Long tourId) {
         tourRepository.deleteById(tourId);
+    }
+
+    public void holdTicketForTour(Tour tour, Integer numberOfTicket) {
+        int availableTicket = tour.getAvailableTicket();
+        if (availableTicket >= numberOfTicket) {
+            tour.setAvailableTicket(availableTicket - numberOfTicket);
+        } else {
+            throw new BadRequestException("No available slots");
+        }
+        tourRepository.save(tour);
     }
 }
