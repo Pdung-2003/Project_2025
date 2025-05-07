@@ -2,6 +2,7 @@ package com.devteria.identityservice.dto.request;
 
 import com.devteria.identityservice.entity.Tour;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
