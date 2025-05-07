@@ -14,6 +14,17 @@ spring:
       ddl-auto: update
       dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: tourxuyenviet2025@gmail.com
+    password: agbv ddct eqzw jwko
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 jwt:
   signerKey: "x5N/IYQDk/BvPC2XWv7xE2TdU2YlZsewgbUOvN3/m71lrjo74knXkebs4jSmEjjQ"
   valid-duration: 3000 # in seconds
