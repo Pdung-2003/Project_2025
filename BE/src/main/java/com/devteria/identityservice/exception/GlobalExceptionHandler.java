@@ -17,8 +17,7 @@ import com.devteria.identityservice.dto.request.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.request.WebRequest;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @ControllerAdvice
 @Slf4j
@@ -74,15 +73,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
     }
 
-    @ExceptionHandler(value = AccessDeniedException.class)
-    ResponseEntity<ApiResponse> handlingAccessDeniedException(AccessDeniedException exception) {
-        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+    @ExceptionHandler({AccessDeniedException.class, ForbiddenException.class})
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(Exception e, WebRequest request){
 
-        return ResponseEntity.status(errorCode.getStatusCode())
-                .body(ApiResponse.builder()
-                        .code(errorCode.getCode())
-                        .message(errorCode.getMessage())
-                        .build());
+        return ResponseEntity.status(FORBIDDEN).body(
+                ErrorResponse.builder()
+                        .timestamp(new Date())
+                        .status(FORBIDDEN.value())
+                        .error(FORBIDDEN.getReasonPhrase())
+                        .path(request.getDescription(false).replace("uri=",""))
+                        .message(e.getMessage())
+                        .build()
+        );
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
