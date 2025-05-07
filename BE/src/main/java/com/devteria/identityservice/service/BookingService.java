@@ -123,6 +123,12 @@ public class BookingService {
         return bookingMapper.toResponse(bookingRepository.save(booking));
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public BookingResponse changeStatusBooking(Booking booking, Booking.Status newStatus) {
+        booking.setStatus(newStatus);
+        return bookingMapper.toResponse(bookingRepository.save(booking));
+    }
+
     public BookingResponse getBookingById(Integer bookingId) {
         return bookingMapper.toResponse(getBooking(bookingId));
     }
@@ -132,13 +138,10 @@ public class BookingService {
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
     }
 
-    /*
-    public void deleteBooking(Integer bookingId) {
-        if (!bookingRepository.existsById(bookingId)) {
-            throw new AppException(ErrorCode.BOOKING_NOT_EXISTED);
-        }
-        bookingRepository.deleteById(bookingId);
-    }*/
+    public Booking getBooking(String bookingCode) {
+        return bookingRepository.findByBookingCode(bookingCode)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+    }
 
     private User getUser(String username) {
         return userRepository.findByUsername(username)

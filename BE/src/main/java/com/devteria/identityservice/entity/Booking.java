@@ -8,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -50,8 +51,8 @@ public class Booking {
 
     private String ticketUrl; // Link vé PDF (nếu có)
 
-    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
-    private Payment payments;
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+    private List<Payment> payments;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

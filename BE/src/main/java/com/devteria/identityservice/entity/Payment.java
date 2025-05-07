@@ -1,19 +1,18 @@
 package com.devteria.identityservice.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Builder
+@ToString
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Payment {
@@ -21,7 +20,7 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer paymentId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "booking_id", nullable = false)
     private Booking booking;
 
@@ -30,17 +29,15 @@ public class Payment {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PaymentMethod paymentMethod;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private PaymentStatus paymentStatus;
+
+    @Column(nullable = false)
+    private String transactionRef; //Mã tham chiếu của VNPay
 
     @Column
     private String transactionId; // Mã giao dịch từ ZaloPay hoặc bên thứ 3
 
-    @Column(nullable = false)
-    private LocalDate paymentDate;
+    private LocalDateTime paymentDate;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
@@ -49,12 +46,6 @@ public class Payment {
     @Column(nullable = false)
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-    public enum PaymentMethod {
-        CREDIT_CARD,
-        PAYPAL,
-        BANK_TRANSFER,
-    }
 
     public enum PaymentStatus {
         PAID,
