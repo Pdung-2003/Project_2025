@@ -46,12 +46,6 @@ public class TourService {
         tour = tourRepository.save(tour);
         return tourMapper.toResponse(tour);
     }
-    public TourResponse getTourById(Long id) {
-        Tour tour = tourRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tour not found"));
-        return tourMapper.toResponse(tour);
-    }
-
 
     public Tour getTour(Long tourId) {
         return tourRepository.findById(tourId)

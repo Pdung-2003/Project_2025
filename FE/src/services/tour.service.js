@@ -1,7 +1,7 @@
 import mainRequest from '@/api/mainRequest';
 
 export const getTours = async (params) => {
-  const response = await mainRequest.get('/api/tours', { params });
+  const response = await mainRequest.get('/api/tours/search', { params });
   return response.data;
 };
 
