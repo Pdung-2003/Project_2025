@@ -97,6 +97,9 @@ public class TourService {
     }
 
     public Page<TourResponse> searchTour(TourFilterRequest request) {
+        if (request == null) {
+            request = new TourFilterRequest();
+        }
         Sort sort = Sort.unsorted();
         if (request.getSort() != null && !request.getSort().isEmpty()) {
             String[] sortFilters = request.getSort().split(",");
