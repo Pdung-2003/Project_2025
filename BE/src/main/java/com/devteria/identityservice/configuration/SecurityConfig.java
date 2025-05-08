@@ -26,6 +26,7 @@ public class SecurityConfig {
         "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
         "/users/register",
         "/api/tours/search",
+        "/api/feedbacks/tour-avg-rating/{tourId}", "/api/feedbacks/tour/{tourId}"
     };
 
     private final CustomJwtDecoder customJwtDecoder;
@@ -37,7 +38,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/tours/{tourId}").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/itineraries/{itineraryId}").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/itineraries/tour/{tourId}").permitAll()
-
+                .requestMatchers(HttpMethod.GET, "/api/feedbacks/{feedbackId}").permitAll()
                 .anyRequest().authenticated());
 
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
