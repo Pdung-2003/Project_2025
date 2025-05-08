@@ -7,7 +7,7 @@ const Profile = () => {
   const [tab, setTab] = useState(USER_MANAGER_TABS.PROFILE);
 
   return (
-    <div className="flex flex-row w-full max-w-[1160px] mx-auto mt-10 border border-gray-200 rounded-lg shadow-md h-full">
+    <div className="flex flex-row w-full mx-auto mt-10 border border-gray-200 rounded-lg shadow-md h-full container max-w-[1160px] ">
       <SidebarUser tab={tab} setTab={setTab} />
       <div className="border-r border-gray-200"></div>
       <div className="flex-1 p-5">

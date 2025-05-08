@@ -8,6 +8,7 @@ const TourFeatureSection = () => {
     try {
       const response = await getTours({
         pageNumber: 1,
+        pageSize: 6,
       });
       console.log(response);
     } catch (error) {

@@ -14,10 +14,10 @@ const LoginForm = () => {
   const onSubmit = async (data) => {
     try {
       const response = await login(data);
-      if (response?.results) {
+      if (response?.code === 1000) {
         dispatch({
           type: 'LOGIN',
-          payload: response.results,
+          payload: response?.result?.token,
         });
         toast.success('Đăng nhập thành công');
       } else {

@@ -6,8 +6,12 @@ export function useAuthActions() {
 
   const fetchProfile = async () => {
     try {
-      const profile = await userService.getProfile();
-      dispatch({ type: 'SET_USER', payload: profile });
+      const response = await userService.getProfile();
+      if (response?.code === 1000) {
+        dispatch({ type: 'SET_USER', payload: response.result });
+      } else {
+        dispatch({ type: 'SET_ERROR', payload: response.message });
+      }
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: error.message });
     }
