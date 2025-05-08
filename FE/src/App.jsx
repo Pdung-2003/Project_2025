@@ -7,6 +7,7 @@ import UserManager from './pages/Dashboard/UserManager';
 import DashboardLayout from './layouts/DashboardLayout';
 import Profile from '@/pages/Profile';
 import Tour from '@/pages/Tour';
+import TourManager from '@/pages/TourManager';
 import Authentication from './Authentication';
 
 function App() {
@@ -50,6 +51,10 @@ const PUBLIC_ROUTES = [
   {
     path: '/tours',
     element: Tour,
+  },
+  {
+    path: '/tour-manager',
+    element: TourManager,
   },
 ];
 

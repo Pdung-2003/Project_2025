@@ -1,3 +1,4 @@
+import FavoritesDialog from '@/components/sections/FavoritesDialog';
 import { useAuthState } from '@/contexts/AuthContext';
 import AvatarProfile from '@/layouts/MainLayout/Header/AvatarProfile';
 import LoginModal from '@/layouts/MainLayout/Header/LoginModal';
@@ -47,6 +48,7 @@ const RightHeader = () => {
           </p>
         </div>
       </div>
+      <FavoritesDialog open={false} onClose={() => {}} />
     </div>
   );
 };
