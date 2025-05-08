@@ -6,7 +6,9 @@ import { Link } from 'react-router-dom';
 const TourFeatureSection = () => {
   const fetchTours = async () => {
     try {
-      const response = await getTours();
+      const response = await getTours({
+        pageNumber: 1,
+      });
       console.log(response);
     } catch (error) {
       console.log(error);
@@ -26,7 +28,7 @@ const TourFeatureSection = () => {
         </Link>
       </div>
       <div className="grid grid-cols-3 gap-5">
-        {Array.from({ length: 9 }).map((_, index) => (
+        {Array.from({ length: 6 }).map((_, index) => (
           <TourCard key={index} />
         ))}
       </div>

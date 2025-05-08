@@ -1,4 +1,4 @@
-import { Eye } from 'lucide-react';
+import { Eye, EyeClosed } from 'lucide-react';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { Controller } from 'react-hook-form';
@@ -30,7 +30,7 @@ const TextFieldControl = ({ label, placeholder, rules, inputProps, control, name
                   className="absolute right-2 top-1/2 -translate-y-1/2"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  <Eye />
+                  {showPassword ? <EyeClosed /> : <Eye />}
                 </button>
               )}
             </div>
