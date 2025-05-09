@@ -1,5 +1,6 @@
 package com.devteria.identityservice.service;
 
+import com.devteria.identityservice.dto.response.ImagePathResponse;
 import com.devteria.identityservice.entity.ImagePath;
 import com.devteria.identityservice.exception.ResourceNotFoundException;
 import com.devteria.identityservice.repository.ImagePathRepository;
@@ -19,7 +20,7 @@ public class ImagePathService {
     private final CloudinaryService cloudinaryService;
 
     public ImagePath saveImageUpload(ImagePath.ReferenceEntity referenceType, Long referenceId,
-                                     String url, String fileName
+                                     String url, String fileName, String title
     ) {
         ImagePath imagePath = ImagePath.builder()
                 .fileName(fileName)
@@ -27,6 +28,7 @@ public class ImagePathService {
                 .uploadedAt(LocalDateTime.now())
                 .referenceId(referenceId)
                 .referenceType(referenceType)
+                .title(title)
                 .build();
 
         return imagePathRepository.save(imagePath);
@@ -41,6 +43,12 @@ public class ImagePathService {
         imagePath.setUrl(url);
         imagePath.setFileName(fileName);
         imagePath.setUploadedAt(LocalDateTime.now());
+        return imagePathRepository.save(imagePath);
+    }
+
+    public ImagePath updateTitle(String title, Long imagePathId) {
+        ImagePath imagePath = getImagePath(imagePathId);
+        imagePath.setTitle(title);
         return imagePathRepository.save(imagePath);
     }
 

@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -28,6 +29,19 @@ public class ItineraryController {
 
         ApiResponse<ItineraryResponse> apiResponse = ApiResponse.<ItineraryResponse>builder()
                 .result(itineraryService.create(request))
+                .build();
+        return ResponseEntity.ok().body(apiResponse);
+    }
+
+    @PutMapping("/upload-image/{itineraryId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<ApiResponse<ItineraryResponse>> uploadImageForItinerary(@PathVariable @Min(1) Integer itineraryId,
+                                                                                  @RequestPart MultipartFile[] files
+    ) {
+        log.info("API upload image for itinerary with id: {}", itineraryId);
+
+        ApiResponse<ItineraryResponse> apiResponse = ApiResponse.<ItineraryResponse>builder()
+                .result(itineraryService.uploadImageForItinerary(itineraryId, files))
                 .build();
         return ResponseEntity.ok().body(apiResponse);
     }

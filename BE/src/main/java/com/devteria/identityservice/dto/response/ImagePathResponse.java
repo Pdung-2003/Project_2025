@@ -13,5 +13,6 @@ import java.time.LocalDateTime;
 public class ImagePathResponse implements Serializable {
     private Long imagePathId;
     private String url;
+    private String title;
     private LocalDateTime uploadedAt;
 }
