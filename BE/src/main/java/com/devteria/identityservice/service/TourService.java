@@ -101,25 +101,17 @@ public class TourService {
             request = new TourFilterRequest();
         }
         Sort sort = Sort.unsorted();
-        if (request.getSort() != null && !request.getSort().isEmpty()) {
-            String[] sortFilters = request.getSort().split(",");
-            for (String s : sortFilters) {
-                String[] order = s.split(":");
-                String property = order[0];
-                String direction = order[1].toLowerCase();
-                sort.and(Sort.by(direction.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, property));
-            }
+        if (request.getSortBy() != null && !request.getSortBy().isEmpty()) {
+            sort = sort.and(Sort.by(request.getSortDirection().equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, request.getSortBy()));
         }
 
-        Pageable pageable = PageRequest.of(request.getPageNumber(), request.getPageSize(), sort);
+        Pageable pageable = PageRequest.of(request.getPageNumber() - 1, request.getPageSize(), sort);
         Page<Tour> tours = tourRepository.searchTour(
-                request.getTourName(),
-                request.getLocation(), request.getDestination(),
+                request.getSearchKey(),
                 request.getStartDateFrom(), request.getStartDateTo(),
                 request.getMinPrice(), request.getMaxPrice(),
                 request.getStatus(),
                 request.getManagerId(),
-                request.getCompany(),
                 pageable);
 
         return tours.map(tourMapper::toResponse);

@@ -22,7 +22,7 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
                 t.tourName LIKE CONCAT('%', :searchKey, '%')
                 OR t.location LIKE CONCAT('%', :searchKey, '%')
                 OR t.destination LIKE CONCAT('%', :searchKey, '%')
-                OR t.companyName LIKE CONCAT('%', :company, '%')
+                OR t.companyName LIKE CONCAT('%', :searchKey, '%')
             )
         )
         AND (:startDateFrom IS NULL OR t.startDate >= :startDateFrom)
