@@ -3,6 +3,9 @@ server:
   servlet:
     context-path: /identity
 
+client:
+  port: 5173
+
 spring:
   datasource:
     url: jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres?user=postgres.mpddbzkmroumgazdwomn&password=Ducdung789!
@@ -39,3 +42,7 @@ cloudinary:
   cloud-name: ${CLOUDINARY_NAME:deq6qkrq5}
   api-key: ${CLOUDINARY_KEY:351231857363369}
   api-secret: ${CLOUDINARY_SECRET:v3FDad5YAriUwrH6NT0LVneav3k}
+
+app:
+  verificationCodeExpiry: 5 #in minutes
+  passwordResetCodeExpiry: 3 #in minutes

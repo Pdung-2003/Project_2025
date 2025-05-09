@@ -6,6 +6,8 @@ import java.util.Objects;
 
 import jakarta.validation.ConstraintViolation;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -34,6 +36,19 @@ public class GlobalExceptionHandler {
         apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
 
         return ResponseEntity.badRequest().body(apiResponse);
+    }
+
+    @ExceptionHandler(value = AuthenticationException.class)
+    ResponseEntity<ErrorResponse> handlingAuthenticationException(AuthenticationException e, WebRequest request) {
+        return ResponseEntity.status(UNAUTHORIZED).body(
+                ErrorResponse.builder()
+                        .timestamp(new Date())
+                        .status(UNAUTHORIZED.value())
+                        .error(UNAUTHORIZED.getReasonPhrase())
+                        .path(request.getDescription(false).replace("uri=",""))
+                        .message(e.getMessage())
+                        .build()
+        );
     }
 
     @ExceptionHandler(BadRequestException.class)

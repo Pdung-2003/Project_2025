@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Xác minh Email</title>
+    <style>
+        .container {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #1a73e8;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #0f5bd3;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Xin chào <span th:text="${fullName}">Người dùng</span>,</h2>
+
+    <p>Cảm ơn bạn đã đăng ký tài khoản với chúng tôi. Dưới đây là mã xác minh email của bạn:</p>
+
+    <a class="btn" th:text="${verificationCode}">ABCD1234</a>
+
+    <p>Thời hạn xác minh email này là 5 phút. Nếu bạn không tạo tài khoản này, vui lòng bỏ qua email này.</p>
+
+    <p>Trân trọng,<br>Đội ngũ hỗ trợ</p>
+</div>
+</body>
+</html>
