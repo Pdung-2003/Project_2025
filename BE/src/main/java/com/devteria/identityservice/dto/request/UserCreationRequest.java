@@ -23,9 +23,11 @@ public class UserCreationRequest {
     String password;
 
     String email;
+
     String fullName;
     String phoneNumber;
     String address;
+    Boolean emailVerified; //chỉ có đối với user được ADMIN tạo
 
     @DobConstraint(min = 10, message = "INVALID_DOB")
     LocalDate dob;

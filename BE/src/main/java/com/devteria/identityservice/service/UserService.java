@@ -1,25 +1,23 @@
 package com.devteria.identityservice.service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.devteria.identityservice.constant.PredefinedRole;
-import com.devteria.identityservice.dto.request.ChangePasswordRequest;
-import com.devteria.identityservice.dto.request.UserAdminUpdateRequest;
+import com.devteria.identityservice.dto.request.*;
 import com.devteria.identityservice.dto.response.UserAdminResponse;
 import com.devteria.identityservice.entity.Permission;
 import com.devteria.identityservice.entity.UserRolePermission;
+import com.devteria.identityservice.exception.AuthenticationException;
+import com.devteria.identityservice.exception.BadRequestException;
 import com.devteria.identityservice.repository.PermissionRepository;
 import com.devteria.identityservice.repository.UserRolePermissionRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.devteria.identityservice.dto.request.UserCreationRequest;
-import com.devteria.identityservice.dto.request.UserUpdateRequest;
 import com.devteria.identityservice.dto.response.UserResponse;
 import com.devteria.identityservice.entity.Role;
 import com.devteria.identityservice.entity.User;
@@ -37,18 +35,36 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
+
+    @Value("${app.verificationCodeExpiry}")
+    private Integer verificationCodeExpiry;
+
+    @Value("${app.passwordResetCodeExpiry}")
+    private Integer passwordResetExpiry;
+
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
     private final UserRolePermissionRepository userRolePermissionRepository; // Add this
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Transactional(rollbackFor = Exception.class)
     public UserResponse registerForCustomer(UserCreationRequest request) {
+        if (request.getEmail() == null || request.getEmail().isEmpty()) {
+            throw new BadRequestException("Email must not empty");
+        }
+
         Role role = roleRepository.findByName(PredefinedRole.USER_ROLE).orElseThrow();
         request.setRoles(Set.of(role.getId()));
-        return userMapper.toUserResponse(createUser(request));
+
+        User newUser = createUser(request);
+        newUser.setEmailVerified(false);
+        newUser.setVerificationCode(UUID.randomUUID().toString().split("-")[0].toUpperCase());
+        newUser.setVerificationCodeExpiry(LocalDateTime.now().plusMinutes(verificationCodeExpiry));
+        newUser = userRepository.save(newUser);
+        return userMapper.toUserResponse(newUser);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -175,6 +191,69 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserResponse getUserResponseById(Long id) {
         return userMapper.toUserResponse(getUser(id));
+    }
+
+    public void sendVerificationCode(String username) {
+        User user = getUser(username);
+        if(user.getEmailVerified().equals(true)) {
+            throw new BadRequestException("Your account has been successfully verified");
+        }
+
+        user.setVerificationCode(UUID.randomUUID().toString().split("-")[0].toUpperCase());
+        user.setVerificationCodeExpiry(LocalDateTime.now().plusMinutes(verificationCodeExpiry));
+        userRepository.save(user);
+        emailService.sendEmailVerify(user);
+    }
+
+    public void verifyEmail(VerifyEmailRequest request) {
+        String username = request.getUsername();
+        String code = request.getCode();
+        User user = getUser(username);
+        if(user.getEmailVerified().equals(true)) {
+            throw new BadRequestException("Your account has been successfully verified");
+        }
+
+        if (!user.getVerificationCode().equalsIgnoreCase(code)
+            || user.getVerificationCodeExpiry().isBefore(LocalDateTime.now())
+        ) {
+            throw new BadRequestException("Verification code incorrect");
+        }
+
+        user.setEmailVerified(true);
+        user.setVerificationCode(null);
+        user.setVerificationCodeExpiry(null);
+        userRepository.save(user);
+    }
+
+    public void sendResetPasswordCode(String username) {
+        User user = getUser(username);
+        if(user.getEmailVerified().equals(false)) {
+            throw new BadRequestException("Email not verified");
+        }
+
+        user.setPasswordResetCode(UUID.randomUUID().toString().split("-")[0].toUpperCase());
+        user.setPasswordResetExpiry(LocalDateTime.now().plusMinutes(passwordResetExpiry));
+        userRepository.save(user);
+        emailService.sendEmailResetPassword(user);
+    }
+
+    public void resetPassword(ResetPasswordRequest request) {
+        String username = request.getUsername();
+        String code = request.getCode();
+        String newPw = request.getNewPassword();
+
+        User user = getUser(username);
+
+        if (!user.getPasswordResetCode().equalsIgnoreCase(code)
+                || user.getPasswordResetExpiry().isBefore(LocalDateTime.now())
+        ) {
+            throw new BadRequestException("Reset password code incorrect");
+        }
+
+        user.setPasswordDigest(passwordEncoder.encode(newPw));
+        user.setPasswordResetCode(null);
+        user.setPasswordResetExpiry(null);
+        userRepository.save(user);
     }
 
     public List<UserAdminResponse> getUserWithManagersRole() {
