@@ -9,13 +9,11 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface FeedbackMapper {
 
-    @Mapping(target = "customer.id", source = "customerId")
-    @Mapping(target = "tour.tourId", source = "tourId")
-    @Mapping(target = "booking.bookingId", source = "bookingId")
-    Feedback toEntity(FeedbackRequest request);
+    Feedback toFeedback(FeedbackRequest request);
 
-    @Mapping(target = "customerId", source = "customer.id")
-    @Mapping(target = "tourId", source = "tour.tourId")
     @Mapping(target = "bookingId", source = "booking.bookingId")
+    @Mapping(target = "tourId", source = "tour.tourId")
+    @Mapping(target = "userId", source = "customer.id")
+    @Mapping(target = "userFullname", source = "customer.fullName")
     FeedbackResponse toResponse(Feedback feedback);
 }

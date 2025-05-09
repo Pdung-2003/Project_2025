@@ -58,4 +58,5 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {  //
             Pageable pageable
     );
 
+    Optional<Booking> findByBookingCode(String bookingCode);
 }
