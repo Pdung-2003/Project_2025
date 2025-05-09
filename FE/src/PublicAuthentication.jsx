@@ -3,11 +3,12 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuthDispatch } from './contexts/AuthContext';
 import { introspect } from './services/auth.service';
 import { useAuthActions } from './hooks/useAuthActions';
-const Authentication = () => {
+
+const PublicAuthentication = () => {
   const dispatch = useAuthDispatch();
   const navigate = useNavigate();
-  const { fetchProfile } = useAuthActions();
   const token = localStorage.getItem('token');
+  const { fetchProfile } = useAuthActions();
 
   useEffect(() => {
     const fetchValidToken = async () => {
@@ -27,9 +28,7 @@ const Authentication = () => {
       }
     };
 
-    if (!token) {
-      navigate('/');
-    } else {
+    if (token) {
       fetchValidToken();
     }
   }, [token]);
@@ -37,4 +36,4 @@ const Authentication = () => {
   return <Outlet />;
 };
 
-export default Authentication;
+export default PublicAuthentication;

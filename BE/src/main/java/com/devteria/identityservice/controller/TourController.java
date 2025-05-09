@@ -58,8 +58,8 @@ public class TourController {
                 .result(tours.getContent())
                 .pagination(
                         PaginationResponse.builder()
-                                .page(1)
-                                .size(10)
+                                .page(filterRequest.getPageNumber() - 1)
+                                .size(filterRequest.getPageSize())
                                 .totalElements(tours.getTotalElements())
                                 .totalPages(tours.getTotalPages())
                                 .isFirst(tours.isFirst())

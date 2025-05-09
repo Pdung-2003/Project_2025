@@ -1,5 +1,6 @@
 import TextField from '@/components/common/TextFieldControl';
 import { useAuthDispatch } from '@/contexts/AuthContext';
+import { useAuthActions } from '@/hooks/useAuthActions';
 import { login } from '@/services/auth.service';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -7,6 +8,7 @@ import { toast } from 'react-toastify';
 
 const LoginForm = () => {
   const dispatch = useAuthDispatch();
+  const { fetchProfile } = useAuthActions();
   const { control, handleSubmit, reset, setError } = useForm({
     defaultValues: INIT_VALUES,
   });
@@ -19,6 +21,7 @@ const LoginForm = () => {
           type: 'LOGIN',
           payload: response?.result?.token,
         });
+        fetchProfile();
         toast.success('Đăng nhập thành công');
       } else {
         toast.error(response?.message || 'Đăng nhập thất bại');
@@ -62,7 +65,7 @@ const LoginForm = () => {
           rules={{
             required: 'Vui lòng nhập mật khẩu',
             validate: (value) => {
-              if (value.length < 6) {
+              if (value.length < 3) {
                 return 'Mật khẩu phải có ít nhất 6 ký tự';
               }
             },

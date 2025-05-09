@@ -17,27 +17,28 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
 
     @Query("""
         SELECT t FROM Tour t
-        WHERE ( t.tourName LIKE CONCAT('%', :tourName, '%'))
-          AND ( t.location LIKE CONCAT('%', :location, '%'))
-          AND ( t.destination LIKE CONCAT('%', :destination, '%'))
-          AND (:startDateFrom IS NULL OR t.startDate >= :startDateFrom)
-          AND (:startDateTo IS NULL OR t.startDate <= :startDateTo)
-          AND (:minPrice IS NULL OR t.price >= :minPrice)
-          AND (:maxPrice IS NULL OR t.price <= :maxPrice)
-          AND (:status IS NULL OR t.status = :status)
-          AND (:managerId IS NULL OR t.manager.id = :managerId)
-          AND (t.companyName LIKE CONCAT('%', :company, '%'))
-        """)
-    Page<Tour> searchTour(@Param("tourName") String tourName,
-                          @Param("location") String location,
-                          @Param("destination") String destination,
+        WHERE (
+            :searchKey IS NULL OR (
+                t.tourName LIKE CONCAT('%', :searchKey, '%')
+                OR t.location LIKE CONCAT('%', :searchKey, '%')
+                OR t.destination LIKE CONCAT('%', :searchKey, '%')
+                OR t.companyName LIKE CONCAT('%', :company, '%')
+            )
+        )
+        AND (:startDateFrom IS NULL OR t.startDate >= :startDateFrom)
+        AND (:startDateTo IS NULL OR t.startDate <= :startDateTo)
+        AND (:minPrice IS NULL OR t.price >= :minPrice)
+        AND (:maxPrice IS NULL OR t.price <= :maxPrice)
+        AND (:status IS NULL OR t.status = :status)
+        AND (:managerId IS NULL OR t.manager.id = :managerId)
+    """)
+    Page<Tour> searchTour(@Param("searchKey") String searchKey,
                           @Param("startDateFrom") LocalDate startDateFrom,
                           @Param("startDateTo") LocalDate startDateTo,
                           @Param("minPrice") BigDecimal minPrice,
                           @Param("maxPrice") BigDecimal maxPrice,
                           @Param("status") Tour.Status status,
                           @Param("managerId") Long managerId,
-                          @Param("company") String company,
                           Pageable pageable);
 
 

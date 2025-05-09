@@ -1,13 +1,23 @@
 import { IMAGE_CONSTANT } from '@/constants/image.constant';
+import { useAuthState } from '@/contexts/AuthContext';
 import { useAuthActions } from '@/hooks/useAuthActions';
-import { LogOut, Truck, User } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { Cog, LayoutDashboard, LogOut, Truck, User } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const AvatarProfile = () => {
   const { logout } = useAuthActions();
+  const { user } = useAuthState();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  const isManager = useMemo(() => {
+    return user?.roles.some((role) => role.name === 'TOUR_MANAGER');
+  }, [user]);
+
+  const isAdmin = useMemo(() => {
+    return user?.roles.some((role) => role.name === 'ADMIN');
+  }, [user]);
 
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -44,6 +54,28 @@ const AvatarProfile = () => {
                 Hồ sơ cá nhân
               </Link>
             </li>
+            {isAdmin && (
+              <li>
+                <Link
+                  to={`/dashboard`}
+                  className="w-full text-left hover:bg-gray-100 px-2 py-1 flex"
+                >
+                  <LayoutDashboard className="mr-2" />
+                  Quản lý hệ thống
+                </Link>
+              </li>
+            )}
+            {isManager && (
+              <li>
+                <Link
+                  to={`/tour-manager`}
+                  className="w-full text-left hover:bg-gray-100 px-2 py-1 flex"
+                >
+                  <Cog className="mr-2" />
+                  Quản lý tour
+                </Link>
+              </li>
+            )}
             <li>
               <Link to={`/order`} className="w-full text-left hover:bg-gray-100 px-2 py-1 flex">
                 <Truck className="mr-2" />
