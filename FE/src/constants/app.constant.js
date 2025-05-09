@@ -6,6 +6,5 @@ export const TITLE_OF_ROUTE = {
 export const USER_MANAGER_TABS = {
   PROFILE: 'profile',
   ORDER: 'order',
-  TOUR_MANAGER: 'tour-manager',
   LOGOUT: 'logout',
 };

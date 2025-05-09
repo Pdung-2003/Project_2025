@@ -3,6 +3,7 @@ import { createContext, useReducer, useContext } from 'react';
 
 const initialState = {
   user: null,
+  token: null,
   isAuthenticated: false,
 };
 
@@ -10,11 +11,15 @@ const initialState = {
 function authReducer(state, action) {
   switch (action.type) {
     case 'LOGIN':
-      return { ...state, isAuthenticated: true, user: action.payload };
+      localStorage.setItem('token', action.payload);
+      return { ...state, isAuthenticated: true };
     case 'LOGOUT':
+      localStorage.removeItem('token');
       return { ...state, isAuthenticated: false, user: null };
     case 'SET_USER':
       return { ...state, isAuthenticated: !!action.payload, user: action.payload };
+    case 'AUTHENTICATED':
+      return { ...state, isAuthenticated: action.payload };
     default:
       return state;
   }

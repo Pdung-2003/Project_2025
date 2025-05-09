@@ -1,66 +1,128 @@
 package com.devteria.identityservice.service;
 
+import com.devteria.identityservice.dto.request.TourFilterRequest;
 import com.devteria.identityservice.dto.request.TourRequest;
 import com.devteria.identityservice.dto.response.TourResponse;
 import com.devteria.identityservice.entity.Tour;
+import com.devteria.identityservice.entity.User;
+import com.devteria.identityservice.exception.AppException;
+import com.devteria.identityservice.exception.BadRequestException;
+import com.devteria.identityservice.exception.ErrorCode;
 import com.devteria.identityservice.mapper.TourMapper;
 import com.devteria.identityservice.repository.TourRepository;
-import com.devteria.identityservice.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@RequiredArgsConstructor
 public class TourService {
 
-    @Autowired
-    private TourRepository tourRepository;
-
-    @Autowired
-    private TourMapper tourMapper;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final TourRepository tourRepository;
+    private final TourMapper tourMapper;
+    private final UserService userService;
+    private final CloudinaryService cloudinaryService;
 
     // Tạo mới tour
-    public TourResponse createTour(TourRequest tourRequest,String imageUrl) {
-        Tour tour = tourMapper.toEntity(tourRequest);
+    @Transactional(rollbackFor = Exception.class)
+    public TourResponse createTour(TourRequest request, MultipartFile file) {
+        Tour tour = tourMapper.toEntity(request);
+        User manager = userService.getUser(request.getManagerId());
+        tour.setManager(manager);
+        tour.setStatus(Tour.Status.ACTIVE);
+        tour.setAvailableTicket(request.getMaxCapacity());
 
-        // Lấy manager từ UserRepository dựa trên managerId trong DTO
-        tour.setManager(userRepository.findById(tourRequest.getManagerId())
-                .orElseThrow(() -> new RuntimeException("Manager not found")));
-        tour.setTourBanner(imageUrl);
+        String fileName = file.getOriginalFilename();
+        if (fileName != null && fileName.contains(".")) {
+            fileName = fileName.substring(0, fileName.lastIndexOf("."));
+        }
+        String bannerUrl = cloudinaryService.uploadFile(file, "tour-banner", fileName);
+        tour.setTourBanner(bannerUrl);
         tour = tourRepository.save(tour);
         return tourMapper.toResponse(tour);
     }
-    public TourResponse getTourById(Long id) {
-        Tour tour = tourRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tour not found"));
+
+    public Tour getTour(Long tourId) {
+        return tourRepository.findById(tourId)
+                .orElseThrow(() -> new AppException(ErrorCode.TOUR_NOT_EXISTED));
+    }
+
+    @Transactional(readOnly = true)
+    public TourResponse getTourById(Long tourId) {
+        Tour tour = getTour(tourId);
         return tourMapper.toResponse(tour);
     }
 
-
-    // Lấy tour theo managerId
-    public List<TourResponse> getToursByManagerId(Long managerId) {
-        List<Tour> tours = tourRepository.findByManagerId(managerId);
-        return tours.stream().map(tourMapper::toResponse).collect(Collectors.toList());
-    }
-
-    // Lấy tour theo companyName
-    public List<TourResponse> getToursByCompanyName(String companyName) {
-        List<Tour> tours = tourRepository.findByCompanyName(companyName);
-        return tours.stream().map(tourMapper::toResponse).collect(Collectors.toList());
+    @Transactional(rollbackFor = Exception.class)
+    public TourResponse updateTour(Long tourId, TourRequest tourRequest, MultipartFile file) {
+        Tour existingTour = getTour(tourId);
+        if(tourRequest != null) {
+            existingTour = updateTourData(existingTour, tourRequest);
+        }
+        if (!file.isEmpty()) {
+            existingTour = updateTourBanner(file, existingTour);
+        }
+        return tourMapper.toResponse(tourRepository.save(existingTour));
     }
 
     // Cập nhật tour
-    public TourResponse updateTour(Long tourId, TourRequest tourRequest) {
-        Tour existingTour = tourRepository.findById(tourId).orElseThrow(() -> new RuntimeException("Tour not found"));
-        Tour tour = tourMapper.toEntity(tourRequest);
-        tour.setTourId(tourId);
-        tour = tourRepository.save(tour);
-        return tourMapper.toResponse(tour);
+    public Tour updateTourData(Tour existingTour, TourRequest tourRequest) {
+
+        existingTour = tourMapper.updateTour(tourRequest, existingTour);
+
+        if (!existingTour.getManager().getId().equals(tourRequest.getManagerId())) {
+            User manager = userService.getUser(tourRequest.getManagerId());
+            existingTour.setManager(manager);
+        }
+        return existingTour;
+    }
+
+    private Tour updateTourBanner(MultipartFile file, Tour existingTour) {
+        String oldBannerUrl = existingTour.getTourBanner();
+        String fileName = file.getOriginalFilename();
+        if (fileName != null && fileName.contains(".")) {
+            fileName = fileName.substring(0, fileName.lastIndexOf("."));
+
+        }
+        String bannerUrl = cloudinaryService.uploadFile(file, "tour-banner", fileName);
+        existingTour.setTourBanner(bannerUrl);
+        cloudinaryService.deleteFile(oldBannerUrl);
+
+        return existingTour;
+    }
+
+    public Page<TourResponse> searchTour(TourFilterRequest request) {
+        if (request == null) {
+            request = new TourFilterRequest();
+        }
+        Sort sort = Sort.unsorted();
+        if (request.getSort() != null && !request.getSort().isEmpty()) {
+            String[] sortFilters = request.getSort().split(",");
+            for (String s : sortFilters) {
+                String[] order = s.split(":");
+                String property = order[0];
+                String direction = order[1].toLowerCase();
+                sort.and(Sort.by(direction.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, property));
+            }
+        }
+
+        Pageable pageable = PageRequest.of(request.getPageNumber(), request.getPageSize(), sort);
+        Page<Tour> tours = tourRepository.searchTour(
+                request.getTourName(),
+                request.getLocation(), request.getDestination(),
+                request.getStartDateFrom(), request.getStartDateTo(),
+                request.getMinPrice(), request.getMaxPrice(),
+                request.getStatus(),
+                request.getManagerId(),
+                request.getCompany(),
+                pageable);
+
+        return tours.map(tourMapper::toResponse);
     }
 
     // Xóa tour
@@ -68,9 +130,13 @@ public class TourService {
         tourRepository.deleteById(tourId);
     }
 
-    // Lấy tất cả tour
-    public List<TourResponse> getAllTours() {
-        List<Tour> tours = tourRepository.findAll();
-        return tours.stream().map(tourMapper::toResponse).collect(Collectors.toList());
+    public void holdTicketForTour(Tour tour, Integer numberOfTicket) {
+        int availableTicket = tour.getAvailableTicket();
+        if (availableTicket >= numberOfTicket) {
+            tour.setAvailableTicket(availableTicket - numberOfTicket);
+        } else {
+            throw new BadRequestException("No available slots");
+        }
+        tourRepository.save(tour);
     }
 }

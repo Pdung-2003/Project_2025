@@ -16,14 +16,6 @@ const SidebarUser = ({ tab, setTab }) => {
       </button>
       <button
         className={`text-sm font-medium  text-left py-2 px-4 hover:bg-gray-100 rounded-lg ${
-          tab === USER_MANAGER_TABS.TOUR_MANAGER ? 'bg-gray-100 text-black' : 'text-gray-500'
-        }`}
-        onClick={() => setTab(USER_MANAGER_TABS.TOUR_MANAGER)}
-      >
-        Quản lý tour
-      </button>
-      <button
-        className={`text-sm font-medium  text-left py-2 px-4 hover:bg-gray-100 rounded-lg ${
           tab === USER_MANAGER_TABS.ORDER ? 'bg-gray-100 text-black' : 'text-gray-500'
         }`}
         onClick={() => setTab(USER_MANAGER_TABS.ORDER)}

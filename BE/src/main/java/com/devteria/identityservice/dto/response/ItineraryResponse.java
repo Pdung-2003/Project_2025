@@ -1,15 +1,20 @@
 package com.devteria.identityservice.dto.response;
 
-import lombok.Data;
+import lombok.*;
 
-import java.time.LocalDate;
+import java.io.Serializable;
 
-@Data
-public class ItineraryResponse {
-    private Integer itineraryId;  // id của lịch trình
-    private Long tourId;  // tourId tham chiếu đến tour
-    private LocalDate date;  // Ngày lịch trình
-    private String activityDescription;  // Mô tả hoạt động trong lịch trình
-    private String createdAt;  // Thời gian tạo
-    private String updatedAt;  // Thời gian cập nhật
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+public class ItineraryResponse implements Serializable {
+    private Integer itineraryId;
+    private Long tourId;
+    private Integer dayNumberOfTour;
+    private String title;
+    private String activityDescription;
+    private String location;
 }

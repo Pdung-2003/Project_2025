@@ -1,15 +1,26 @@
 package com.devteria.identityservice.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
-public class FeedbackResponse {
+@AllArgsConstructor
+@NoArgsConstructor
+public class FeedbackResponse implements Serializable {
+
     private Integer feedbackId;
-    private Long customerId;
     private Long tourId;
     private Integer bookingId;
+    private String userId;
+    private String userFullname;
     private Integer rating;
     private String comment;
-    private String createdAt;
-    private String updatedAt;
+    private List<ImagePathResponse> images;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

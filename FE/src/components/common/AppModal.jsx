@@ -1,16 +1,17 @@
 import { AnimatePresence, motion } from 'motion/react';
 import PropTypes from 'prop-types';
 
-const AppModal = ({ open, onClose, title, content, titleProps }) => {
+const AppModal = ({ open, onClose, title, content, titleProps, paperProps }) => {
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50`}>
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
-            className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 relative"
+            {...paperProps}
+            className={`relative bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 ${paperProps?.className}`}
           >
             <button
               onClick={onClose}
@@ -39,4 +40,5 @@ AppModal.propTypes = {
   title: PropTypes.string,
   content: PropTypes.node,
   titleProps: PropTypes.object,
+  paperProps: PropTypes.object,
 };

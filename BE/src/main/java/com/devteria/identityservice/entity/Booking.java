@@ -5,8 +5,9 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.sql.Timestamp;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -28,10 +29,19 @@ public class Booking {
     @JoinColumn(name = "tour_id", nullable = false)
     private Tour tour;
 
+    @Column(name = "booking_code", nullable = false)
+    private String bookingCode;
+
+    @Column(nullable = false)
     private Integer numberOfPeople;
 
-    private LocalDate bookingDate; // Ngày tạo đơn đặt tour
+//    @Column(nullable = false)
+//    private LocalDate bookingDate; // Ngày tạo đơn đặt tour
 
+    @Column(nullable = false)
+    private BigDecimal priceBooking;
+
+    @Column(nullable = false)
     private LocalDate tourDate; // Ngày người dùng muốn đi tour (rất quan trọng)
 
     @Enumerated(EnumType.STRING)
@@ -45,10 +55,13 @@ public class Booking {
     private List<Payment> payments;
 
     @CreationTimestamp
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
+
+    @Column(length = 4096)
+    private String requireFromCustomer;
 
     public enum Status {
         PENDING,       // Chưa xác nhận

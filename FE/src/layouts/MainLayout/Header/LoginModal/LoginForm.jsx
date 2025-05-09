@@ -1,14 +1,35 @@
 import TextField from '@/components/common/TextFieldControl';
+import { useAuthDispatch } from '@/contexts/AuthContext';
+import { login } from '@/services/auth.service';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 const LoginForm = () => {
-  const { control, handleSubmit, reset } = useForm({
+  const dispatch = useAuthDispatch();
+  const { control, handleSubmit, reset, setError } = useForm({
     defaultValues: INIT_VALUES,
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    try {
+      const response = await login(data);
+      if (response?.code === 1000) {
+        dispatch({
+          type: 'LOGIN',
+          payload: response?.result?.token,
+        });
+        toast.success('Đăng nhập thành công');
+      } else {
+        toast.error(response?.message || 'Đăng nhập thất bại');
+      }
+    } catch (error) {
+      if (error?.response?.data?.code === 1006) {
+        setError('password', { message: 'Tài khoản hoặc mật khẩu không chính xác' });
+      } else {
+        toast.error(error?.response?.data?.message || 'Đăng nhập thất bại');
+      }
+    }
   };
 
   useEffect(() => {
@@ -21,14 +42,18 @@ const LoginForm = () => {
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-2">
         <TextField
-          label="Email"
+          label="Tài khoản"
           rules={{
-            required: 'Vui lòng nhập email',
-            pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Email không hợp lệ' },
+            required: 'Vui lòng nhập tài khoản',
+            validate: (value) => {
+              if (value.length < 4) {
+                return 'Tài khoản phải có ít nhất 4 ký tự';
+              }
+            },
           }}
           control={control}
-          name="email"
-          placeholder="Email"
+          name="username"
+          placeholder="Tài khoản"
         />
       </div>
       <div className="flex flex-col gap-2">
@@ -60,6 +85,6 @@ const LoginForm = () => {
 export default LoginForm;
 
 const INIT_VALUES = {
-  email: '',
+  username: '',
   password: '',
 };

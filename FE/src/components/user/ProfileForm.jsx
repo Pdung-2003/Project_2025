@@ -1,8 +1,22 @@
 import TextFieldControl from '@/components/common/TextFieldControl';
+import { useAuthState } from '@/contexts/AuthContext';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 const ProfileForm = () => {
-  const { control } = useForm();
+  const { user } = useAuthState();
+  const { control, setValue } = useForm({
+    defaultValues: INIT_VALUES,
+  });
+
+  useEffect(() => {
+    setValue('username', user?.username);
+    setValue('email', user?.email);
+    setValue('fullName', user?.fullName);
+    setValue('phoneNumber', user?.phoneNumber);
+    setValue('address', user?.address);
+  }, [user]);
+
   return (
     <div className="flex flex-col space-y-3">
       <h1 className="text-2xl font-bold">Hồ sơ cá nhân</h1>
@@ -23,3 +37,11 @@ const ProfileForm = () => {
 };
 
 export default ProfileForm;
+
+const INIT_VALUES = {
+  username: '',
+  email: '',
+  fullName: '',
+  phoneNumber: '',
+  address: '',
+};

@@ -7,6 +7,8 @@ import UserManager from './pages/Dashboard/UserManager';
 import DashboardLayout from './layouts/DashboardLayout';
 import Profile from '@/pages/Profile';
 import Tour from '@/pages/Tour';
+import TourManager from '@/pages/TourManager';
+import Authentication from './Authentication';
 
 function App() {
   return (
@@ -22,17 +24,30 @@ function App() {
           }
         />
       ))}
-      {ADMIN_ROUTES.map((route) => (
-        <Route
-          key={route.path}
-          path={route.path}
-          element={
-            <DashboardLayout>
-              <route.element />
-            </DashboardLayout>
-          }
-        />
-      ))}
+      <Route element={<Authentication />}>
+        {USER_PRIVATE_ROUTES.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={
+              <MainLayout>
+                <route.element />
+              </MainLayout>
+            }
+          />
+        ))}
+        {PRIVATE_ROUTES.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={
+              <DashboardLayout>
+                <route.element />
+              </DashboardLayout>
+            }
+          />
+        ))}
+      </Route>
     </Routes>
   );
 }
@@ -45,16 +60,23 @@ const PUBLIC_ROUTES = [
     element: HomePage,
   },
   {
-    path: '/profile',
-    element: Profile,
-  },
-  {
-    path: '/tour',
+    path: '/tours',
     element: Tour,
   },
 ];
 
-const ADMIN_ROUTES = [
+const USER_PRIVATE_ROUTES = [
+  {
+    path: '/profile',
+    element: Profile,
+  },
+  {
+    path: '/tour-manager',
+    element: TourManager,
+  },
+];
+
+const PRIVATE_ROUTES = [
   {
     path: '/dashboard',
     element: Dashboard,
