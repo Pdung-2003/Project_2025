@@ -53,7 +53,7 @@ const UserManagerModal = ({ open, onClose, userId }) => {
       onClose={handleClose}
       title={userId ? 'Cập nhật người dùng' : 'Thêm người dùng'}
       content={
-        <form className="grid grid-cols-2 gap-4" onSubmit={handleSubmit(onSubmit)}>
+        <form className="grid grid-cols-2 gap-4 bg-white p-5" onSubmit={handleSubmit(onSubmit)}>
           <TextFieldControl
             label="Họ tên"
             rules={{

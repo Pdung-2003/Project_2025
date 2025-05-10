@@ -1,4 +1,4 @@
-import { HomeIcon, UserIcon } from 'lucide-react';
+import { HomeIcon, MapIcon, UserIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Sidebar = () => {
@@ -37,5 +37,10 @@ const SIDEBAR_ITEMS = [
     label: 'User Manager',
     icon: <UserIcon />,
     path: '/user-manager',
+  },
+  {
+    label: 'Tour Manager',
+    icon: <MapIcon />,
+    path: '/tour-manager',
   },
 ];
