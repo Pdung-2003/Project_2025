@@ -23,6 +23,8 @@ public class ImagePath implements Serializable {
     @Column(name = "file_name", nullable = false)
     private String fileName;
 
+    private String title;
+
     @Column(name = "url", nullable = false, unique = true)
     private String url;
 
@@ -36,6 +38,7 @@ public class ImagePath implements Serializable {
 
     public enum ReferenceEntity{
         TOUR,
-        FEEDBACK
+        FEEDBACK,
+        ITINERARY
     }
 }

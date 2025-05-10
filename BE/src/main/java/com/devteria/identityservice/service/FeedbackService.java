@@ -84,7 +84,7 @@ public class FeedbackService {
                 .map(image -> {
                     String fileName = generateUniqueFileName();
                     String url = cloudinaryService.uploadFile(image, folderName, fileName);
-                    return  imagePathService.saveImageUpload(FEEDBACK, Long.valueOf(feedbackId), url, fileName);
+                    return  imagePathService.saveImageUpload(FEEDBACK, Long.valueOf(feedbackId), url, fileName, null);
 
                 })
                 .toList();

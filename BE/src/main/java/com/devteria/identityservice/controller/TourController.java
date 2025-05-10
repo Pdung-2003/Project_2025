@@ -55,18 +55,8 @@ public class TourController {
         Page<TourResponse> tours = tourService.searchTour(filterRequest);
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .result(tours.getContent())
-                .pagination(
-                        PaginationResponse.builder()
-                                .page(filterRequest.getPageNumber())
-                                .size(filterRequest.getPageSize())
-                                .totalElements(tours.getTotalElements())
-                                .totalPages(tours.getTotalPages())
-                                .isFirst(tours.isFirst())
-                                .hasNext(tours.hasNext())
-                                .build()
-                )
+                .pagination(new PaginationResponse(tours))
                 .build();
-
         return ResponseEntity.ok().body(apiResponse);
     }
 

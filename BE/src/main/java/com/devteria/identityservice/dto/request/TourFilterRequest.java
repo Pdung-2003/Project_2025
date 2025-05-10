@@ -16,8 +16,8 @@ import java.time.LocalDate;
 @ToString
 public class TourFilterRequest implements Serializable {
     private String searchKey = "";
-    private LocalDate startDateFrom;
-    private LocalDate startDateTo;
+    private LocalDate startDateFrom = LocalDate.MIN;
+    private LocalDate startDateTo = LocalDate.of(9999,12,31);
     private BigDecimal minPrice;
     private BigDecimal maxPrice;
     private Tour.Status status;
