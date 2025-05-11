@@ -14,18 +14,18 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class TourFilterRequest implements Serializable {
-    private String tourName = "";
+public class TourFilterRequest implements Serializable { private String tourName = "";
     private String location = "";
     private String destination = "";
-    private LocalDate startDateFrom;
-    private LocalDate startDateTo;
+    private LocalDate startDateFrom = LocalDate.of(1, 12, 31);
+    private LocalDate startDateTo = LocalDate.of(9999,12,31);
     private BigDecimal minPrice;
     private BigDecimal maxPrice;
     private Tour.Status status;
     private Long managerId;
     private String company = "";
-    private String sort;  // [field1:direction1,field2:direction2] VD:startDate:desc,price:asc
+    private String sortBy;  // [field1:direction1,field2:direction2] VD:startDate:desc,price:asc
+    private String sortDirection = "asc";
 
     @Min(value = 0)
     private Integer pageNumber = 0;

@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import com.devteria.identityservice.exception.AuthenticationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -77,6 +78,8 @@ public class AuthenticationService {
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPasswordDigest());
 
         if (!authenticated) throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+        if (user.getEmailVerified().equals(false)) throw new AuthenticationException("Email not verified");
 
         var token = generateToken(user);
 

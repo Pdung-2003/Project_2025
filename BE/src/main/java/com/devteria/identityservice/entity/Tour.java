@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -54,8 +55,10 @@ public class Tour {
 
     private Double discount = 0.0;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate startDate; // Ngày bắt đầu tour
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate endDate; // Ngày kết thúc tour
 
     @Column(length = 2048)

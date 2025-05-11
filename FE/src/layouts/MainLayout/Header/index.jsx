@@ -1,10 +1,16 @@
 import SearchDebounce from '@/components/common/SearchDebounce';
+import { useTourDispatch, useTourState } from '@/contexts/TourContext';
 import RightHeader from '@/layouts/MainLayout/Header/RightHeader';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Header = () => {
-  const [valueInput, setValueInput] = useState('');
+  const dispatch = useTourDispatch();
+  const { filter } = useTourState();
+  const navigate = useNavigate();
+
+  const handleChangeValueInput = (value) => {
+    dispatch({ type: 'SET_FILTER', payload: { ...filter, searchKey: value } });
+  };
 
   return (
     <div className="flex flex-row items-center justify-between h-[55px] px-2.5 shadow">
@@ -20,9 +26,10 @@ const Header = () => {
         />
       </Link>
       <SearchDebounce
-        valueInput={valueInput}
-        changeValueInput={setValueInput}
+        valueInput={filter?.searchKey}
+        changeValueInput={handleChangeValueInput}
         className={'w-1/5'}
+        onClickIcon={() => navigate('/tours')}
       />
       <RightHeader />
     </div>

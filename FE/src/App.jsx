@@ -7,23 +7,26 @@ import UserManager from './pages/Dashboard/UserManager';
 import DashboardLayout from './layouts/DashboardLayout';
 import Profile from '@/pages/Profile';
 import Tour from '@/pages/Tour';
-import TourManager from '@/pages/TourManager';
+import TourManager from '@/pages/Dashboard/TourManager';
 import Authentication from './Authentication';
+import PublicAuthentication from './PublicAuthentication';
 
 function App() {
   return (
     <Routes>
-      {PUBLIC_ROUTES.map((route) => (
-        <Route
-          key={route.path}
-          path={route.path}
-          element={
-            <MainLayout>
-              <route.element />
-            </MainLayout>
-          }
-        />
-      ))}
+      <Route element={<PublicAuthentication />}>
+        {PUBLIC_ROUTES.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={
+              <MainLayout>
+                <route.element />
+              </MainLayout>
+            }
+          />
+        ))}
+      </Route>
       <Route element={<Authentication />}>
         {USER_PRIVATE_ROUTES.map((route) => (
           <Route
@@ -70,10 +73,6 @@ const USER_PRIVATE_ROUTES = [
     path: '/profile',
     element: Profile,
   },
-  {
-    path: '/tour-manager',
-    element: TourManager,
-  },
 ];
 
 const PRIVATE_ROUTES = [
@@ -84,5 +83,9 @@ const PRIVATE_ROUTES = [
   {
     path: '/user-manager',
     element: UserManager,
+  },
+  {
+    path: '/tour-manager',
+    element: TourManager,
   },
 ];

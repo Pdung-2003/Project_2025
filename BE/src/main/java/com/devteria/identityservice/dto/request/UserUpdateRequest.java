@@ -13,15 +13,12 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserUpdateRequest {
-    String firstName;
-    String lastName;
-
+    String phoneNumber;
+    String address;
     @NotBlank
     String fullName;
-    String phoneNumber;
 
     @DobConstraint(min = 10, message = "INVALID_DOB")
     LocalDate dob;
 
-    String address;
 }

@@ -1,13 +1,12 @@
 import { useEffect } from 'react';
-import { Navigate, Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuthActions } from './hooks/useAuthActions';
-import { useAuthDispatch, useAuthState } from './contexts/AuthContext';
+import { useAuthDispatch } from './contexts/AuthContext';
 import { introspect } from './services/auth.service';
 
 const Authentication = () => {
   const { fetchProfile } = useAuthActions();
   const dispatch = useAuthDispatch();
-  const { isAuthenticated } = useAuthState();
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
@@ -19,13 +18,13 @@ const Authentication = () => {
           fetchProfile();
         } else {
           dispatch({ type: 'LOGOUT' });
-          navigate('/login');
+          navigate('/');
         }
         dispatch({ type: 'AUTHENTICATED', payload: response.result });
       } catch (error) {
         console.log(error);
         dispatch({ type: 'LOGOUT' });
-        navigate('/login');
+        navigate('/');
       }
     };
 
@@ -35,10 +34,6 @@ const Authentication = () => {
       fetchValidToken();
     }
   }, [token]);
-
-  if (!isAuthenticated) {
-    return <Navigate to={'/'} />;
-  }
 
   return <Outlet />;
 };

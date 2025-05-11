@@ -31,7 +31,10 @@ export function useAuthActions() {
 
   const logout = async () => {
     try {
-      await authService.logout();
+      const token = localStorage.getItem('token');
+      if (token) {
+        await authService.logout(token);
+      }
       dispatch({ type: 'LOGOUT' });
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: error.message });

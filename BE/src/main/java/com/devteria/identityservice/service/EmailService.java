@@ -7,6 +7,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -22,6 +23,11 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class EmailService {
+
+    @Value("${app.passwordResetCodeExpiry}")
+    private Integer passwordResetExpiry;
+
+    private final String DOMAIN = "localhost";
 
     private final JavaMailSender emailSender;
     private final TemplateEngine templateEngine;
@@ -59,5 +65,24 @@ public class EmailService {
         model.put("discount", 0);
         model.put("total", booking.getPriceBooking());
         this.sendEmail(user.getEmail(), subject, model, "booking-confirm-template");
+    }
+
+    @Async("taskExecutor")
+    public void sendEmailVerify(User newUser) {
+        String subject = "Email xác thực";
+        Map<String, Object> model = new HashMap<>();
+        model.put("fullName", newUser.getFullName());
+        model.put("verificationCode", newUser.getVerificationCode());
+        this.sendEmail(newUser.getEmail(), subject, model, "verify-email-template");
+    }
+
+    @Async("taskExecutor")
+    public void sendEmailResetPassword(User user) {
+        String subject = "Yêu cầu đổi lại mật khẩu";
+        Map<String, Object> model = new HashMap<>();
+        model.put("fullName", user.getFullName());
+        model.put("resetCode", user.getPasswordResetCode());
+        model.put("expiryTime", String.format("%d phút", passwordResetExpiry));
+        this.sendEmail(user.getEmail(), subject, model, "reset-password-email");
     }
 }

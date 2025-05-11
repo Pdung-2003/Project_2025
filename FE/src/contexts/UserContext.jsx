@@ -4,6 +4,7 @@ import { createContext, useReducer, useContext } from 'react';
 const initialState = {
   isLoading: false,
   users: [],
+  managers: [],
   user: null,
   error: null,
 };
@@ -15,12 +16,16 @@ function userReducer(state, action) {
       return { ...state, isLoading: action.payload };
     case 'SET_USERS':
       return { ...state, users: action.payload };
+    case 'SET_MANAGERS':
+      return { ...state, managers: action.payload };
     case 'SET_USER':
       return { ...state, user: action.payload };
     case 'SET_ERROR':
       return { ...state, error: action.payload };
     case 'DELETE_USER':
       return { ...state, users: state.users.filter((user) => user.id !== action.payload) };
+    case 'RESET_STATE':
+      return initialState;
     default:
       return state;
   }

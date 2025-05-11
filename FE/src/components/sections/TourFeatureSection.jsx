@@ -1,23 +1,15 @@
 import TourCard from '@/components/tour/TourCard';
-import { getTours } from '@/services/tour.service';
+import { useTourState } from '@/contexts/TourContext';
+import { useTourActions } from '@/hooks/useTourActions';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const TourFeatureSection = () => {
-  const fetchTours = async () => {
-    try {
-      const response = await getTours({
-        pageNumber: 1,
-        pageSize: 6,
-      });
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const { tours } = useTourState();
+  const { fetchTours } = useTourActions();
 
   useEffect(() => {
-    fetchTours();
+    fetchTours({ pageNumber: 1, pageSize: 6 });
   }, []);
 
   return (
@@ -29,8 +21,8 @@ const TourFeatureSection = () => {
         </Link>
       </div>
       <div className="grid grid-cols-3 gap-5">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <TourCard key={index} />
+        {tours.map((tour) => (
+          <TourCard key={tour.id} tour={tour} />
         ))}
       </div>
     </div>

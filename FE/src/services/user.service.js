@@ -15,6 +15,11 @@ export const getProfile = async () => {
   return response.data;
 };
 
+export const updateProfile = async (user) => {
+  const response = await mainRequest.put('/users', user);
+  return response.data;
+};
+
 export const createUser = async (user) => {
   const response = await mainRequest.post('/users', user);
   return response.data;
@@ -29,3 +34,9 @@ export const deleteUser = async (id) => {
   const response = await mainRequest.delete(`/users/${id}`);
   return response.data;
 };
+
+export const getManagers = async () => {
+  const response = await mainRequest.get('/users/managers');
+  return response.data;
+};
+

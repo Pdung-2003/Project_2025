@@ -23,8 +23,9 @@ import org.springframework.web.filter.CorsFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {
-        "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
-        "/users/register",
+        "/auth/login", "/auth/introspect", "/auth/logout", "/auth/refresh",
+        "/users/register", "/users/send-verification-code", "/users/verify-email",
+        "/users/send-reset-password-code", "/users/reset-password",
         "/api/tours/search",
         "/api/feedbacks/tour-avg-rating/{tourId}", "/api/feedbacks/tour/{tourId}"
     };

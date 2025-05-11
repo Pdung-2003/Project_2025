@@ -20,6 +20,9 @@ const LoginModal = ({ open, onClose }) => {
       onClose={handleClose}
       title={activeTab === 'login' ? 'Đăng nhập' : 'Đăng ký'}
       titleProps={{ className: 'text-center' }}
+      paperProps={{
+        className: 'max-w-lg',
+      }}
       content={
         <div className="flex flex-col gap-4">
           <div className="flex flex-row space-x-2 bg-[#f4f4f5] text-[#71717a] rounded-lg p-1">
@@ -36,7 +39,13 @@ const LoginModal = ({ open, onClose }) => {
               Đăng ký
             </button>
           </div>
-          {activeTab === 'login' ? <LoginForm /> : <RegisterForm />}
+          <div className="flex flex-col p-5 bg-white">
+            {activeTab === 'login' ? (
+              <LoginForm />
+            ) : (
+              <RegisterForm onSuccess={() => setActiveTab('login')} />
+            )}
+          </div>
         </div>
       }
     />

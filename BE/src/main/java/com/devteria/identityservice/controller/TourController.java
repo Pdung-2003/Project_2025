@@ -50,24 +50,13 @@ public class TourController {
     }
 
     //Lấy tất cả các tour
-    @GetMapping("/search")
+    @PostMapping("/search")
     public ResponseEntity<ApiResponse<?>> getTours(@RequestBody(required = false) TourFilterRequest filterRequest) {
-        log.info("API search tour with request: {}", filterRequest);
         Page<TourResponse> tours = tourService.searchTour(filterRequest);
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .result(tours.getContent())
-                .pagination(
-                        PaginationResponse.builder()
-                                .page(1)
-                                .size(10)
-                                .totalElements(tours.getTotalElements())
-                                .totalPages(tours.getTotalPages())
-                                .isFirst(tours.isFirst())
-                                .hasNext(tours.hasNext())
-                                .build()
-                )
+                .pagination(new PaginationResponse(tours))
                 .build();
-
         return ResponseEntity.ok().body(apiResponse);
     }
 

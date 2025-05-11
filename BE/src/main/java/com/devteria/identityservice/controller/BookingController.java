@@ -60,7 +60,7 @@ public class BookingController {
         );
     }
 
-    @GetMapping("/all")
+    @PostMapping("/all")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TOUR_MANAGER')")
     public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllBookings(@RequestBody BookingFilterRequest request) {
         log.info("API get list booking for Admin or Tour Manager");

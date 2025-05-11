@@ -3,6 +3,7 @@ package com.devteria.identityservice.dto.response;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Builder
 @Getter
@@ -17,4 +18,5 @@ public class ItineraryResponse implements Serializable {
     private String title;
     private String activityDescription;
     private String location;
+    private List<ImagePathResponse> images;
 }

@@ -36,6 +36,7 @@ public class TourService {
         tour.setManager(manager);
         tour.setStatus(Tour.Status.ACTIVE);
         tour.setAvailableTicket(request.getMaxCapacity());
+        tour.setCurrentBooked(0);
 
         String fileName = file.getOriginalFilename();
         if (fileName != null && fileName.contains(".")) {
@@ -64,7 +65,7 @@ public class TourService {
         if(tourRequest != null) {
             existingTour = updateTourData(existingTour, tourRequest);
         }
-        if (!file.isEmpty()) {
+        if (file != null && !file.isEmpty()) {
             existingTour = updateTourBanner(file, existingTour);
         }
         return tourMapper.toResponse(tourRepository.save(existingTour));
@@ -101,17 +102,11 @@ public class TourService {
             request = new TourFilterRequest();
         }
         Sort sort = Sort.unsorted();
-        if (request.getSort() != null && !request.getSort().isEmpty()) {
-            String[] sortFilters = request.getSort().split(",");
-            for (String s : sortFilters) {
-                String[] order = s.split(":");
-                String property = order[0];
-                String direction = order[1].toLowerCase();
-                sort.and(Sort.by(direction.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, property));
-            }
+        if (request.getSortBy() != null && !request.getSortBy().isEmpty()) {
+            sort = sort.and(Sort.by(request.getSortDirection().equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, request.getSortBy()));
         }
 
-        Pageable pageable = PageRequest.of(request.getPageNumber(), request.getPageSize(), sort);
+        Pageable pageable = PageRequest.of(request.getPageNumber() - 1, request.getPageSize(), sort);
         Page<Tour> tours = tourRepository.searchTour(
                 request.getTourName(),
                 request.getLocation(), request.getDestination(),
@@ -121,6 +116,7 @@ public class TourService {
                 request.getManagerId(),
                 request.getCompany(),
                 pageable);
+
 
         return tours.map(tourMapper::toResponse);
     }

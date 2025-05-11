@@ -8,3 +8,8 @@ export const USER_MANAGER_TABS = {
   ORDER: 'order',
   LOGOUT: 'logout',
 };
+
+export const DEFAULT_PAGINATION = {
+  pageNumber: 1,
+  pageSize: 10,
+};
