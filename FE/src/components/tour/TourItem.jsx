@@ -5,14 +5,8 @@ const TourItem = ({ tour, isManager = false }) => {
   return (
     <div className="flex flex-row bg-white overflow-hidden border border-gray-200 h-full w-full cursor-pointer">
       {/* Image */}
-      <div className="w-1/3">
-        <img
-          src={
-            'https://owa.bestprice.vn/images/tours/large/tour-du-lich-nhat-ban-2024-ha-noi-osaka-kyoto-tokyo-6n5d-66fe5e4b06995-848x477.jpg'
-          }
-          alt="Tour Image"
-          className="w-full h-full object-cover"
-        />
+      <div className="w-1/3 aspect-[3/2] bg-gray-100">
+        <img src={tour?.tourBanner} alt="Tour Image" className="w-full h-full object-contain" />
       </div>
 
       {/* Content */}

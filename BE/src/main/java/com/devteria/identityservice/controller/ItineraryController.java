@@ -24,11 +24,13 @@ public class ItineraryController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<ApiResponse<ItineraryResponse>> createItinerary(@RequestBody ItineraryRequest request) {
-        log.info("API add itinerary for tour with id: {}", request.getTourId());
+    public ResponseEntity<ApiResponse<ItineraryResponse>> createItinerary(@RequestPart(name = "itinerary") ItineraryRequest itinerary,
+                                                                          @RequestPart(name = "files") MultipartFile[] files
+    ) {
+        log.info("API add itinerary for tour with id: {}", itinerary.getTourId());
 
         ApiResponse<ItineraryResponse> apiResponse = ApiResponse.<ItineraryResponse>builder()
-                .result(itineraryService.create(request))
+                .result(itineraryService.create(itinerary, files))
                 .build();
         return ResponseEntity.ok().body(apiResponse);
     }

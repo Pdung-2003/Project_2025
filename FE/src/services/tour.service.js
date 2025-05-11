@@ -21,12 +21,21 @@ export const getTourByCompany = async (companyName) => {
 };
 
 export const createTour = async (tour) => {
-  const response = await mainRequest.post('/api/tours', tour);
+  const response = await mainRequest.post('/api/tours', tour, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  },
+  );
   return response.data;
 };
 
 export const updateTour = async (id, tour) => {
-  const response = await mainRequest.put(`/api/tours/${id}`, tour);
+  const response = await mainRequest.put(`/api/tours/${id}`, tour, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
   return response.data;
 };
 

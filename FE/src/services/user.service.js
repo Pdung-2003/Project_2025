@@ -29,3 +29,9 @@ export const deleteUser = async (id) => {
   const response = await mainRequest.delete(`/users/${id}`);
   return response.data;
 };
+
+export const getManagers = async () => {
+  const response = await mainRequest.get('/users/managers');
+  return response.data;
+};
+

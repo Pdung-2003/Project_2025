@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
-import { Controller } from 'react-hook-form';
+import { Controller, useWatch } from 'react-hook-form';
 import { useEffect, useRef, useState } from 'react';
 
 const UploadImageControl = ({ label, name, control, rules, imageProps, ...props }) => {
+  const banner = useWatch({ control, name: 'banner' });
   const [preview, setPreview] = useState(null);
   const inputRef = useRef(null);
 
@@ -13,9 +14,16 @@ const UploadImageControl = ({ label, name, control, rules, imageProps, ...props 
       }
     };
   }, [preview]);
+
+  useEffect(() => {
+    if (banner && typeof banner === 'string') {
+      setPreview(banner);
+    }
+  }, [banner]);
+
   return (
-    <div className="flex flex-col gap-2" {...props}>
-      <label className="mb-1 font-medium">{label}</label>
+    <div className="flex flex-col gap-2 bg-white" {...props}>
+      <label className="mb-1 font-bold text-lg p-2 border-b border-gray-200">{label}</label>
 
       <Controller
         name={name}
@@ -31,7 +39,7 @@ const UploadImageControl = ({ label, name, control, rules, imageProps, ...props 
           };
 
           return (
-            <>
+            <div className="p-5">
               {/* Hidden input file */}
               <input
                 type="file"
@@ -45,17 +53,17 @@ const UploadImageControl = ({ label, name, control, rules, imageProps, ...props 
               <div
                 onClick={() => inputRef.current?.click()}
                 {...imageProps}
-                className={`w-[220px] aspect-video relative border-2 border-dashed border-gray-300 rounded-md flex items-center justify-center cursor-pointer hover:border-blue-500 transition ${imageProps?.className}`}
+                className={`h-[150px] overflow-hidden aspect-[3/2] relative border-2 border-dashed border-gray-300 rounded-md flex items-center justify-center cursor-pointer hover:border-blue-500 transition ${imageProps?.className}`}
               >
                 {preview ? (
-                  <img src={preview} alt="Preview" className="object-fill" />
+                  <img src={preview} alt="Preview" className="object-cover h-full" />
                 ) : (
                   <span className="text-gray-400 text-sm text-center px-2">Click để tải ảnh</span>
                 )}
               </div>
 
               <p className="text-red-500 text-sm">{fieldState.error?.message}</p>
-            </>
+            </div>
           );
         }}
       />

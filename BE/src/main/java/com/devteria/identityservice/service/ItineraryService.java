@@ -43,16 +43,30 @@ public class ItineraryService {
     private final CloudinaryService cloudinaryService;
 
     @Transactional(rollbackFor = Exception.class)
-    public ItineraryResponse create(ItineraryRequest request) {
-        existsItineraryWithTourIdAndDayNumber(request.getTourId(), request.getDayNumberOfTour());
+    public ItineraryResponse create(ItineraryRequest request, MultipartFile[] images) {
+        try {
+            existsItineraryWithTourIdAndDayNumber(request.getTourId(), request.getDayNumberOfTour());
 
-        Tour tour = getTourById(request.getTourId());
-        validateDayNumber(tour, request.getDayNumberOfTour());
+            Tour tour = getTourById(request.getTourId());
+            validateDayNumber(tour, request.getDayNumberOfTour());
 
-        Itinerary newItinerary = itineraryMapper.toItinerary(request);
-        newItinerary.setTour(tour);
+            Itinerary newItinerary = itineraryMapper.toItinerary(request);
+            newItinerary.setTour(tour);
+            Itinerary itinerary = itineraryRepository.save(newItinerary);
+            if ( images != null && images.length > 0) {
+                uploadImages(images, itinerary.getItineraryId());
+            }
 
-        return itineraryMapper.toItineraryResponse(itineraryRepository.save(newItinerary));
+            ItineraryResponse response = itineraryMapper.toItineraryResponse(itinerary);
+            List<ImagePath> imagePathList = imagePathService.getImagePathForEntity(ITINERARY, Long.valueOf(itinerary.getItineraryId()));
+            response.setImages(imagePathList.stream().map(imagePathMapper::toImagePathResponse).toList());
+
+            return response;
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            throw e;
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)

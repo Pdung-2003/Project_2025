@@ -5,7 +5,9 @@ const TourCard = ({ tour }) => {
   return (
     <div className="w-full max-w-sm bg-white shadow-md border border-gray-300 overflow-hidden flex flex-col">
       {/* Hình ảnh */}
-      <img src={tour.tourBanner} alt="Tour Image" className="w-full h-48 object-contain" />
+      <div className="h-[200px] aspect-[3/2] bg-gray-100 relative">
+        <img src={tour.tourBanner} alt="Tour Image" className="w-full h-full object-contain" />
+      </div>
 
       {/* Nội dung */}
       <div className="flex flex-col p-4 flex-grow">

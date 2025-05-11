@@ -4,6 +4,18 @@ import { userService } from "@/services";
 export function useUserActions() {
     const dispatch = useUserDispatch();
 
+    const fetchManagers = async () => {
+        dispatch({ type: 'SET_LOADING', payload: true });
+        try {
+            const res = await userService.getManagers();
+            dispatch({ type: 'SET_MANAGERS', payload: res.result });
+        } catch (err) {
+            dispatch({ type: 'SET_ERROR', payload: err.message });
+        } finally {
+            dispatch({ type: 'SET_LOADING', payload: false });
+        }
+    };
+
     const fetchUsers = async () => {
         dispatch({ type: 'SET_LOADING', payload: true });
         try {
@@ -64,5 +76,5 @@ export function useUserActions() {
         }
     };
 
-    return { fetchUsers, deleteUser, createUser, updateUser, getUserById };
+    return { fetchUsers, deleteUser, createUser, updateUser, getUserById, fetchManagers };
 }

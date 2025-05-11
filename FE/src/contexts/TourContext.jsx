@@ -7,6 +7,7 @@ const initialState = {
   pagination: DEFAULT_PAGINATION,
   totalElements: 0,
   totalPages: 0,
+  tour: null,
   filter: null,
   loading: false,
   error: null,
@@ -22,6 +23,8 @@ function tourReducer(state, action) {
         totalElements: action.payload.totalElements,
         totalPages: action.payload.totalPages,
       };
+    case 'SET_TOUR':
+      return { ...state, tour: action.payload };
     case 'SET_PAGINATION':
       return { ...state, pagination: { ...state.pagination, ...action.payload } };
     case 'SET_FILTER':

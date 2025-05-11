@@ -24,5 +24,17 @@ export function useTourActions() {
     }
   };
 
-  return { fetchTours };
+  const fetchTourById = async (id) => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    try {
+      const response = await tourService.getTourById(id);
+      dispatch({ type: 'SET_TOUR', payload: response?.result });
+    } catch (error) {
+      dispatch({ type: 'SET_ERROR', payload: error.message });
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  };
+
+  return { fetchTours, fetchTourById };
 }

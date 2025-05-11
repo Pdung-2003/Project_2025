@@ -8,7 +8,7 @@ const TourFilter = () => {
   const { filter } = useTourState();
 
   const handleSort = (sort) => {
-    dispatch({ type: 'SET_FILTER', payload: sort });
+    dispatch({ type: 'SET_FILTER', payload: { ...filter, ...sort } });
   };
 
   const handleChangeFilter = (key, value) => {

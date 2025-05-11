@@ -36,6 +36,7 @@ public class TourService {
         tour.setManager(manager);
         tour.setStatus(Tour.Status.ACTIVE);
         tour.setAvailableTicket(request.getMaxCapacity());
+        tour.setCurrentBooked(0);
 
         String fileName = file.getOriginalFilename();
         if (fileName != null && fileName.contains(".")) {
@@ -64,7 +65,7 @@ public class TourService {
         if(tourRequest != null) {
             existingTour = updateTourData(existingTour, tourRequest);
         }
-        if (!file.isEmpty()) {
+        if (file != null && !file.isEmpty()) {
             existingTour = updateTourBanner(file, existingTour);
         }
         return tourMapper.toResponse(tourRepository.save(existingTour));
