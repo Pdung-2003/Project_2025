@@ -18,7 +18,7 @@ public class TourFilterRequest implements Serializable {
     private String tourName = "";
     private String location = "";
     private String destination = "";
-    private LocalDate startDateFrom = LocalDate.MIN;
+    private LocalDate startDateFrom = LocalDate.of(1, 12, 31);
     private LocalDate startDateTo = LocalDate.of(9999,12,31);
     private BigDecimal minPrice;
     private BigDecimal maxPrice;
