@@ -17,7 +17,7 @@ public class BookingFilterRequest {
     private Integer tourId;
     private String bookingCode = "";
     private Booking.Status status;
-    private LocalDate fromDate = LocalDate.MIN;
+    private LocalDate fromDate = LocalDate.of(1, 12, 31);
     private LocalDate toDate = LocalDate.of(9999, 12, 31);
     private Boolean isTicketSent;
     private BigDecimal minPrice;
