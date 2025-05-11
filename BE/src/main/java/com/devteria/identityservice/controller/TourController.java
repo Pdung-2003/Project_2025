@@ -50,7 +50,7 @@ public class TourController {
     }
 
     //Lấy tất cả các tour
-    @GetMapping("/search")
+    @PostMapping("/search")
     public ResponseEntity<ApiResponse<?>> getTours(@RequestBody(required = false) TourFilterRequest filterRequest) {
         log.info("API search tour with request: {}", filterRequest);
         Page<TourResponse> tours = tourService.searchTour(filterRequest);
