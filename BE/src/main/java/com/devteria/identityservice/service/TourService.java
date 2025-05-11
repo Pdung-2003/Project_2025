@@ -108,12 +108,15 @@ public class TourService {
 
         Pageable pageable = PageRequest.of(request.getPageNumber() - 1, request.getPageSize(), sort);
         Page<Tour> tours = tourRepository.searchTour(
-                request.getSearchKey(),
+                request.getTourName(),
+                request.getLocation(), request.getDestination(),
                 request.getStartDateFrom(), request.getStartDateTo(),
                 request.getMinPrice(), request.getMaxPrice(),
                 request.getStatus(),
                 request.getManagerId(),
+                request.getCompany(),
                 pageable);
+
 
         return tours.map(tourMapper::toResponse);
     }

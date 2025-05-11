@@ -5,3 +5,12 @@ export const formatCurrency = (value) => {
     maximumFractionDigits: 0,
   }).format(value);
 };
+
+export const cleanBody = (body) => {
+  return Object.entries(body).reduce((acc, [key, value]) => {
+    if (value !== null && value !== '' && value !== undefined) {
+      acc[key] = value;
+    }
+    return acc;
+  }, {});
+};

@@ -1,7 +1,8 @@
 import mainRequest from '@/api/mainRequest';
+import { cleanBody } from '@/utils/format';
 
 export const getTours = async (body) => {
-  const response = await mainRequest.post('/api/tours/search', body);
+  const response = await mainRequest.post('/api/tours/search', cleanBody(body));
   return response.data;
 };
 
