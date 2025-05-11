@@ -15,6 +15,11 @@ export const getProfile = async () => {
   return response.data;
 };
 
+export const updateProfile = async (user) => {
+  const response = await mainRequest.put('/users', user);
+  return response.data;
+};
+
 export const createUser = async (user) => {
   const response = await mainRequest.post('/users', user);
   return response.data;

@@ -40,7 +40,11 @@ const LoginModal = ({ open, onClose }) => {
             </button>
           </div>
           <div className="flex flex-col p-5 bg-white">
-            {activeTab === 'login' ? <LoginForm /> : <RegisterForm />}
+            {activeTab === 'login' ? (
+              <LoginForm />
+            ) : (
+              <RegisterForm onSuccess={() => setActiveTab('login')} />
+            )}
           </div>
         </div>
       }

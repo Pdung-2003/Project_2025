@@ -10,6 +10,11 @@ export const login = async (data) => {
   return response.data;
 };
 
+export const register = async (data) => {
+  const response = await mainRequest.post('/users/register', data);
+  return response.data;
+};
+
 export const introspect = async () => {
   const token = localStorage.getItem('token');
   const response = await mainRequest.post('/auth/introspect', { token });

@@ -1,10 +1,12 @@
 import { TITLE_OF_ROUTE } from '@/constants/app.constant';
 import { IMAGE_CONSTANT } from '@/constants/image.constant';
+import { useAuthActions } from '@/hooks/useAuthActions';
 import { Lock, LogOut } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 const TopBar = () => {
+  const { logout } = useAuthActions();
   const { pathname } = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -51,7 +53,10 @@ const TopBar = () => {
                 </button>
               </li>
               <li>
-                <button className="w-full text-left hover:bg-gray-100 px-2 py-1 text-red-600">
+                <button
+                  className="w-full text-left hover:bg-gray-100 px-2 py-1 text-red-600"
+                  onClick={logout}
+                >
                   <LogOut className="inline mr-2" />
                   Đăng xuất
                 </button>

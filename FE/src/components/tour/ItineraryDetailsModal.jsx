@@ -2,12 +2,14 @@ import AppModal from '@/components/common/AppModal';
 import InputIntegerControl from '@/components/common/InputIntegerControl';
 import TextFieldControl from '@/components/common/TextFieldControl';
 import UploadMultipleImagesControl from '@/components/tour/UploadMultipleImagesControl';
+import { useItineraryActions } from '@/hooks/useItineraryActions';
 import { itineraryService } from '@/services';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
 const ItineraryDetailsModal = ({ open, onClose, itineraryId, tourId }) => {
+  const { fetchItineraries } = useItineraryActions();
   const { control, reset, handleSubmit } = useForm({
     defaultValues: {
       title: null,
@@ -26,9 +28,10 @@ const ItineraryDetailsModal = ({ open, onClose, itineraryId, tourId }) => {
   const onSubmit = async (data) => {
     try {
       const { files, ...itinerary } = data;
-      const response = await itineraryService.createItinerary({
-        files,
-        itinerary: new Blob(
+      const formData = new FormData();
+      formData.append(
+        'itinerary',
+        new Blob(
           [
             JSON.stringify({
               ...itinerary,
@@ -36,10 +39,19 @@ const ItineraryDetailsModal = ({ open, onClose, itineraryId, tourId }) => {
             }),
           ],
           { type: 'application/json' }
-        ),
-      });
+        )
+      );
+
+      if (files) {
+        files.forEach((file) => {
+          formData.append('files', file);
+        });
+      }
+
+      const response = await itineraryService.createItinerary(formData);
       console.log(response);
       toast.success('Thêm lịch trình thành công');
+      await fetchItineraries(tourId);
       handleClose();
     } catch (error) {
       console.log(error);

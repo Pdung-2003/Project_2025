@@ -1,11 +1,25 @@
+import { useBookingDispatch, useBookingState } from '@/contexts/BookingContext';
+import { useBookingActions } from '@/hooks/useBookingActions';
 import PropTypes from 'prop-types';
+import { useEffect } from 'react';
 
 const OrderTour = () => {
+  const dispatch = useBookingDispatch();
+  const { booking } = useBookingState();
+  const { fetchMyBookings } = useBookingActions();
+
+  useEffect(() => {
+    fetchMyBookings();
+    return () => {
+      dispatch({ type: 'RESET_STATE' });
+    };
+  }, []);
+
   return (
     <div className="flex flex-col space-y-3">
       <h1 className="text-2xl font-bold">Đơn hàng</h1>
       <div className="flex flex-col space-y-3 overflow-y-auto max-h-[500px]">
-        {TOUR_LIST.map((booking) => (
+        {booking.map((booking) => (
           <OrderTourItem key={booking.id} booking={booking} />
         ))}
       </div>
@@ -20,12 +34,13 @@ const OrderTourItem = ({ booking }) => {
         <p className="text-lg font-bold">Tour: {booking?.tourName}</p>
         <p className="text-sm text-gray-500">Số người: {booking?.numberOfPeople}</p>
         <p className="text-sm text-gray-500">
-          Ngày đặt: {booking?.bookingDate?.toLocaleDateString('vi-VN')}
+          Giá:{' '}
+          {booking?.priceBooking?.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+        </p>
+        <p className="text-sm text-gray-500">
+          Ngày đi: {booking?.tourDate ? new Date(booking.tourDate).toLocaleDateString() : 'N/A'}
         </p>
       </div>
-      <p className="text-sm text-gray-500">
-        Ngày đi: {booking?.tourDate?.toLocaleDateString('vi-VN')}
-      </p>
       <p className="text-md font-bold">Trạng thái: {booking?.status}</p>
     </div>
   );

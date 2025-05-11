@@ -75,20 +75,51 @@ const ItineraryListModal = ({ open, onClose, tourId }) => {
                       <td className="border border-gray-300 p-2">{itinerary.dayNumberOfTour}</td>
                       <td className="border border-gray-300 p-2">{itinerary.location}</td>
                       <td className="border border-gray-300 p-2 text-center">
-                        <button
-                          className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 mr-2"
-                          onClick={() => {
-                            setItineraryEdit(itinerary.id);
-                          }}
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </button>
-                        <button
-                          className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
-                          onClick={() => setItineraryDelete(itinerary.id)}
-                        >
-                          <Trash className="w-4 h-4" />
-                        </button>
+                        <div className="flex justify-center gap-2 flex-nowrap">
+                          <button
+                            className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 mr-2"
+                            onClick={() => {
+                              setItineraryEdit(itinerary.itineraryId);
+                            }}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                          <button
+                            className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
+                            onClick={() => setItineraryDelete(itinerary.itineraryId)}
+                          >
+                            <Trash className="w-4 h-4" />
+                          </button>
+                          {itineraryDelete === itinerary.itineraryId && (
+                            <div className="fixed inset-0 bg-black/30 bg-opacity-40 flex items-center justify-center z-50">
+                              <div className="bg-white rounded-lg shadow-lg w-[320px] p-6 animate-fade-in">
+                                <h3 className="text-lg font-semibold text-center mb-2">
+                                  Xác nhận xoá
+                                </h3>
+                                <p className="text-sm text-gray-600 text-center mb-6">
+                                  Bạn có chắc chắn muốn xoá lịch trình này không?
+                                </p>
+                                <div className="flex justify-center gap-4">
+                                  <button
+                                    className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
+                                    onClick={() => setItineraryDelete(null)}
+                                  >
+                                    Hủy
+                                  </button>
+                                  <button
+                                    className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 transition"
+                                    onClick={() => {
+                                      setItineraryDelete(null);
+                                      handleDeleteItinerary(itinerary.itineraryId);
+                                    }}
+                                  >
+                                    Xác nhận
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -110,27 +141,6 @@ const ItineraryListModal = ({ open, onClose, tourId }) => {
                 </button>
               </div>
             </div>
-            <AppModal
-              open={!!itineraryDelete}
-              onClose={() => setItineraryDelete(null)}
-              title="Bạn có chắc chắn muốn xóa lịch trình này không?"
-              content={
-                <div className="flex flex-row justify-end gap-2">
-                  <button
-                    className="btn-outline-secondary"
-                    onClick={() => setItineraryDelete(null)}
-                  >
-                    Đóng
-                  </button>
-                  <button
-                    className="btn-primary"
-                    onClick={() => handleDeleteItinerary(itineraryDelete)}
-                  >
-                    Xác nhận
-                  </button>
-                </div>
-              }
-            />
             <ItineraryDetailsModal
               open={isAddItineraryOpen}
               onClose={() => setIsAddItineraryOpen(false)}
