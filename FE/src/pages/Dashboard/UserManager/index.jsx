@@ -1,4 +1,3 @@
-import AppModal from '@/components/common/AppModal';
 import SearchDebounce from '@/components/common/SearchDebounce';
 import UserManagerModal from '@/components/user/UserManagerModal';
 import { useUserDispatch, useUserState } from '@/contexts/UserContext';
@@ -6,6 +5,7 @@ import { useUserActions } from '@/hooks/useUserActions';
 import { deleteUser } from '@/services/user.service';
 import { Pencil, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 const UserManager = () => {
   const dispatch = useUserDispatch();
@@ -14,12 +14,13 @@ const UserManager = () => {
   const [search, setSearch] = useState('');
   const [userEdit, setUserEdit] = useState(null);
   const [openModal, setOpenModal] = useState(false);
-
   const { fetchUsers } = useUserActions();
 
   const handleDeleteUser = async (id) => {
     try {
       await deleteUser(id);
+      toast.success('Xoá người dùng thành công');
+      fetchUsers();
     } catch (error) {
       console.log(error);
     } finally {
@@ -38,9 +39,9 @@ const UserManager = () => {
   useEffect(() => {
     const tableEl = document.getElementById('table-container');
     const heightWindow = window.innerHeight;
-    const paginationHeight = document.getElementById('pagination').getBoundingClientRect().height;
+    // const paginationHeight = document.getElementById('pagination').getBoundingClientRect().height;
     const tableTop = tableEl.getBoundingClientRect().top;
-    tableEl.style.height = `${heightWindow - tableTop - paginationHeight - 2}px`;
+    tableEl.style.height = `${heightWindow - tableTop - 10}px`;
   }, []);
 
   return (
@@ -81,21 +82,50 @@ const UserManager = () => {
                   <td className="border border-gray-300 p-2">{user.email}</td>
                   <td className="border border-gray-300 p-2">{user.phoneNumber}</td>
                   <td className="border border-gray-300 p-2 text-center">
-                    <button
-                      className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 mr-2"
-                      onClick={() => {
-                        setUserEdit(user.id);
-                        setOpenModal(true);
-                      }}
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                    <button
-                      className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
-                      onClick={() => setUserDelete(user.id)}
-                    >
-                      <Trash className="w-4 h-4" />
-                    </button>
+                    <div className="flex justify-center items-center gap-2 flex-nowrap">
+                      <button
+                        className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 mr-2"
+                        onClick={() => {
+                          setUserEdit(user.id);
+                          setOpenModal(true);
+                        }}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
+                        onClick={() => setUserDelete(user.id)}
+                      >
+                        <Trash className="w-4 h-4" />
+                      </button>
+                    </div>
+                    {userDelete === user.id && (
+                      <div className="fixed inset-0 bg-black/30 bg-opacity-40 flex items-center justify-center z-50">
+                        <div className="bg-white rounded-lg shadow-lg w-[320px] p-6 animate-fade-in">
+                          <h3 className="text-lg font-semibold text-center mb-2">Xác nhận xoá</h3>
+                          <p className="text-sm text-gray-600 text-center mb-6">
+                            Bạn có chắc chắn muốn xoá người dùng này không?
+                          </p>
+                          <div className="flex justify-center gap-4">
+                            <button
+                              className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
+                              onClick={() => setUserDelete(null)}
+                            >
+                              Hủy
+                            </button>
+                            <button
+                              className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 transition"
+                              onClick={() => {
+                                setUserDelete(null);
+                                handleDeleteUser(user.id);
+                              }}
+                            >
+                              Xác nhận
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -103,7 +133,7 @@ const UserManager = () => {
           </table>
         </div>
         {/* Pagination */}
-        <div
+        {/* <div
           id="pagination"
           className="flex justify-between items-center gap-2 p-2 bg-white border-t border-gray-300"
         >
@@ -116,22 +146,7 @@ const UserManager = () => {
               Tiếp
             </button>
           </div>
-        </div>
-        <AppModal
-          open={!!userDelete}
-          onClose={() => setUserDelete(null)}
-          title="Bạn có chắc chắn muốn xóa người dùng này không?"
-          content={
-            <div className="flex flex-row justify-end gap-2">
-              <button className="btn-outline-secondary" onClick={() => setUserDelete(null)}>
-                Đóng
-              </button>
-              <button className="btn-primary" onClick={() => handleDeleteUser(userDelete)}>
-                Xác nhận
-              </button>
-            </div>
-          }
-        />
+        </div> */}
         <UserManagerModal
           open={openModal}
           onClose={() => {

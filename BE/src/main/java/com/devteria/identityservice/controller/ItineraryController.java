@@ -54,7 +54,6 @@ public class ItineraryController {
                                                                           @PathVariable @Min(1) Integer itineraryId
     ) {
         log.info("API update itinerary with id: {}", itineraryId);
-
         ApiResponse<ItineraryResponse> apiResponse = ApiResponse.<ItineraryResponse>builder()
                 .result(itineraryService.update(itineraryId, request))
                 .build();

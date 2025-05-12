@@ -10,35 +10,39 @@ import Tour from '@/pages/Tour';
 import TourManager from '@/pages/Dashboard/TourManager';
 import Authentication from './Authentication';
 import PublicAuthentication from './PublicAuthentication';
+import TourDetails from './pages/TourDetails';
+import AdminAuthentication from './AdminAuthentication';
 
 function App() {
   return (
     <Routes>
-      <Route element={<PublicAuthentication />}>
-        {PUBLIC_ROUTES.map((route) => (
-          <Route
-            key={route.path}
-            path={route.path}
-            element={
-              <MainLayout>
-                <route.element />
-              </MainLayout>
-            }
-          />
-        ))}
-      </Route>
-      <Route element={<Authentication />}>
-        {USER_PRIVATE_ROUTES.map((route) => (
-          <Route
-            key={route.path}
-            path={route.path}
-            element={
-              <MainLayout>
-                <route.element />
-              </MainLayout>
-            }
-          />
-        ))}
+      <Route element={<AdminAuthentication />}>
+        <Route element={<PublicAuthentication />}>
+          {PUBLIC_ROUTES.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={
+                <MainLayout>
+                  <route.element />
+                </MainLayout>
+              }
+            />
+          ))}
+        </Route>
+        <Route element={<Authentication />}>
+          {USER_PRIVATE_ROUTES.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={
+                <MainLayout>
+                  <route.element />
+                </MainLayout>
+              }
+            />
+          ))}
+        </Route>
         {PRIVATE_ROUTES.map((route) => (
           <Route
             key={route.path}
@@ -57,7 +61,7 @@ function App() {
 
 export default App;
 
-const PUBLIC_ROUTES = [
+export const PUBLIC_ROUTES = [
   {
     path: '/',
     element: HomePage,
@@ -66,16 +70,20 @@ const PUBLIC_ROUTES = [
     path: '/tours',
     element: Tour,
   },
+  {
+    path: '/tour-details/:id',
+    element: TourDetails,
+  },
 ];
 
-const USER_PRIVATE_ROUTES = [
+export const USER_PRIVATE_ROUTES = [
   {
     path: '/profile',
     element: Profile,
   },
 ];
 
-const PRIVATE_ROUTES = [
+export const PRIVATE_ROUTES = [
   {
     path: '/dashboard',
     element: Dashboard,

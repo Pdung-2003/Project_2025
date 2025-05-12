@@ -1,14 +1,20 @@
 import SearchDebounce from '@/components/common/SearchDebounce';
 import AddTourModal from '@/components/tour/AddTourModal';
 import ItineraryListModal from '@/components/tour/ItineraryListModal';
+import { useAuthState } from '@/contexts/AuthContext';
 import { useTourDispatch, useTourState } from '@/contexts/TourContext';
+import { useUserDispatch } from '@/contexts/UserContext';
 import { useTourActions } from '@/hooks/useTourActions';
+import { useUserActions } from '@/hooks/useUserActions';
 import { tourService } from '@/services';
 import { Ellipsis } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 
 const TourManager = () => {
+  const { user } = useAuthState();
+  const { fetchManagers } = useUserActions();
+  const dispatchUser = useUserDispatch();
   const dispatch = useTourDispatch();
   const { fetchTours } = useTourActions();
   const { tours, filter, pagination } = useTourState();
@@ -17,6 +23,10 @@ const TourManager = () => {
   const [isAddTourOpen, setIsAddTourOpen] = useState(false);
   const [isUpdateTourOpen, setIsUpdateTourOpen] = useState(null);
   const [isShowItineraryModal, setIsShowItineraryModal] = useState(null);
+
+  const isTourManager = useMemo(() => {
+    return user?.roles?.some((role) => role.name === 'TOUR_MANAGER');
+  }, [user?.roles]);
 
   const deleteTour = async (tourId) => {
     try {
@@ -30,8 +40,14 @@ const TourManager = () => {
   };
 
   useEffect(() => {
-    fetchTours({ ...filter, ...pagination });
-  }, [filter, pagination]);
+    if (user?.id) {
+      fetchTours({
+        ...filter,
+        ...pagination,
+        managerId: isTourManager ? user?.id : filter?.managerId,
+      });
+    }
+  }, [filter, pagination, isTourManager, user?.id]);
 
   useEffect(() => {
     return () => {
@@ -51,6 +67,15 @@ const TourManager = () => {
   }, [setOpenDropdown]);
 
   useEffect(() => {
+    if (!isTourManager && user?.id) {
+      fetchManagers();
+    }
+    return () => {
+      dispatchUser({ type: 'RESET_STATE' });
+    };
+  }, [isTourManager, user?.id]);
+
+  useEffect(() => {
     const tableEl = document.getElementById('table-container');
     const heightWindow = window.innerHeight;
     const paginationHeight = document.getElementById('pagination').getBoundingClientRect().height;
@@ -63,11 +88,11 @@ const TourManager = () => {
       {/* Search */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-2 mx-2 my-2 items-center">
         <SearchDebounce
-          valueInput={filter?.searchKey || ''}
+          valueInput={filter?.tourName || ''}
           changeValueInput={(value) =>
-            dispatch({ type: 'SET_FILTER', payload: { ...filter, searchKey: value } })
+            dispatch({ type: 'SET_FILTER', payload: { ...filter, tourName: value } })
           }
-          placeholder="Tìm kiếm"
+          placeholder="Tên tour..."
           className="w-full rounded-md p-2 h-full"
         />
         <div className="col-span-4 flex justify-end">
@@ -92,7 +117,7 @@ const TourManager = () => {
             </thead>
             <tbody>
               {tours.map((tour, index) => (
-                <tr key={tour.id} className="hover:bg-gray-50">
+                <tr key={tour.tourId} className="hover:bg-gray-50">
                   <td className="border border-gray-300 text-center p-2">{index + 1}</td>
                   <td className="border border-gray-300 p-2">{tour.tourName}</td>
                   <td className="border border-gray-300 p-2">{tour.companyName}</td>

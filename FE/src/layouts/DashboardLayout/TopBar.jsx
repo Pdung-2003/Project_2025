@@ -3,11 +3,12 @@ import { IMAGE_CONSTANT } from '@/constants/image.constant';
 import { useAuthActions } from '@/hooks/useAuthActions';
 import { Lock, LogOut } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const TopBar = () => {
   const { logout } = useAuthActions();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -55,7 +56,10 @@ const TopBar = () => {
               <li>
                 <button
                   className="w-full text-left hover:bg-gray-100 px-2 py-1 text-red-600"
-                  onClick={logout}
+                  onClick={async () => {
+                    await logout();
+                    navigate('/');
+                  }}
                 >
                   <LogOut className="inline mr-2" />
                   Đăng xuất

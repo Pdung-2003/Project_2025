@@ -18,12 +18,10 @@ public class UserAdminUpdateRequest {
     @DobConstraint(min = 10, message = "INVALID_DOB")
     LocalDate dob;
 
-    String firstName;
-    String lastName;
-
     @NotBlank
     String fullName;
     String phoneNumber;
-    String address;
     Set<Long> roles;
+
+    String address;
 }

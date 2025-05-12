@@ -7,10 +7,14 @@ import { itineraryService } from '@/services';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import TextEditorControl from '../common/TextEditorControl';
+import { useEffect } from 'react';
+import { useItineraryState } from '@/contexts/ItineraryContext';
 
 const ItineraryDetailsModal = ({ open, onClose, itineraryId, tourId }) => {
-  const { fetchItineraries } = useItineraryActions();
-  const { control, reset, handleSubmit } = useForm({
+  const { fetchItineraries, fetchItinerary } = useItineraryActions();
+  const { itinerary } = useItineraryState();
+  const { control, reset, handleSubmit, setValue } = useForm({
     defaultValues: {
       title: null,
       dayNumberOfTour: null,
@@ -48,9 +52,16 @@ const ItineraryDetailsModal = ({ open, onClose, itineraryId, tourId }) => {
         });
       }
 
-      const response = await itineraryService.createItinerary(formData);
-      console.log(response);
-      toast.success('Thêm lịch trình thành công');
+      if (itineraryId) {
+        await itineraryService.updateItinerary(itineraryId, {
+          ...itinerary,
+          tourId,
+        });
+        toast.success('Cập nhật lịch trình thành công');
+      } else {
+        await itineraryService.createItinerary(formData);
+        toast.success('Thêm lịch trình thành công');
+      }
       await fetchItineraries(tourId);
       handleClose();
     } catch (error) {
@@ -58,6 +69,21 @@ const ItineraryDetailsModal = ({ open, onClose, itineraryId, tourId }) => {
       toast.error(error?.response?.data?.message || 'Thêm lịch trình thất bại');
     }
   };
+
+  useEffect(() => {
+    if (itineraryId) {
+      fetchItinerary(itineraryId);
+    }
+  }, [itineraryId]);
+
+  useEffect(() => {
+    if (itinerary) {
+      setValue('title', itinerary?.title);
+      setValue('dayNumberOfTour', itinerary?.dayNumberOfTour);
+      setValue('location', itinerary?.location);
+      setValue('activityDescription', itinerary?.activityDescription);
+    }
+  }, [itinerary]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -73,11 +99,15 @@ const ItineraryDetailsModal = ({ open, onClose, itineraryId, tourId }) => {
             <h2 className="text-black p-2 font-bold text-lg">Thông tin lịch trình</h2>
             <div className="border-b border-gray-200 w-full" />
             <div className="space-x-1.5 space-y-2  p-5 items-start w-full">
-              <UploadMultipleImagesControl
-                control={control}
-                name="files"
-                label={'Ảnh lịch trình'}
-              />
+              {!itineraryId && (
+                <UploadMultipleImagesControl
+                  control={control}
+                  name="files"
+                  label={'Ảnh lịch trình'}
+                  rules={{ required: 'Vui lòng chọn ảnh lịch trình' }}
+                  isEdit={!!itineraryId}
+                />
+              )}
               <TextFieldControl
                 control={control}
                 name="title"
@@ -98,7 +128,7 @@ const ItineraryDetailsModal = ({ open, onClose, itineraryId, tourId }) => {
                 label="Địa điểm"
                 rules={{ required: 'Vui lòng nhập địa điểm' }}
               />
-              <TextFieldControl
+              <TextEditorControl
                 control={control}
                 name="activityDescription"
                 label="Mô tả hoạt động"

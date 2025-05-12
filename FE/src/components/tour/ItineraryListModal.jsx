@@ -3,10 +3,11 @@ import ItineraryDetailsModal from '@/components/tour/ItineraryDetailsModal';
 import { useItineraryDispatch, useItineraryState } from '@/contexts/ItineraryContext';
 import { useItineraryActions } from '@/hooks/useItineraryActions';
 import { itineraryService } from '@/services';
-import { Pencil, Trash } from 'lucide-react';
+import { Ellipsis } from 'lucide-react';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import ItineraryImageModal from './ItineraryImageModal';
 
 const ItineraryListModal = ({ open, onClose, tourId }) => {
   const dispatch = useItineraryDispatch();
@@ -15,6 +16,8 @@ const ItineraryListModal = ({ open, onClose, tourId }) => {
   const [itineraryEdit, setItineraryEdit] = useState(null);
   const [isAddItineraryOpen, setIsAddItineraryOpen] = useState(false);
   const [itineraryDelete, setItineraryDelete] = useState(null);
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const [itineraryImageOpen, setItineraryImageOpen] = useState(null);
 
   const handleDeleteItinerary = async (id) => {
     try {
@@ -33,10 +36,19 @@ const ItineraryListModal = ({ open, onClose, tourId }) => {
   }, [tourId]);
 
   useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.dropdown-itinerary')) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [setOpenDropdown]);
+
+  useEffect(() => {
     const tableEl = document.getElementById('table-itinerary');
     const heightWindow = document.getElementById('itinerary-list-modal').clientHeight;
-    console.log(document.getElementById('itinerary-list-modal'));
-
     const paginationHeight = document.getElementById('pagination').getBoundingClientRect().height;
     const tableTop = tableEl.getBoundingClientRect().top;
     tableEl.style.height = `${heightWindow - tableTop - paginationHeight - 20}px`;
@@ -69,27 +81,52 @@ const ItineraryListModal = ({ open, onClose, tourId }) => {
                 </thead>
                 <tbody>
                   {itineraries.map((itinerary, index) => (
-                    <tr key={itinerary.id} className="hover:bg-gray-50">
+                    <tr key={itinerary.itineraryId} className="hover:bg-gray-50">
                       <td className="border border-gray-300 text-center p-2">{index + 1}</td>
                       <td className="border border-gray-300 p-2">{itinerary.title}</td>
                       <td className="border border-gray-300 p-2">{itinerary.dayNumberOfTour}</td>
                       <td className="border border-gray-300 p-2">{itinerary.location}</td>
                       <td className="border border-gray-300 p-2 text-center">
-                        <div className="flex justify-center gap-2 flex-nowrap">
+                        <div className="flex justify-center gap-2 flex-nowrap relative dropdown-itinerary">
                           <button
-                            className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 mr-2"
+                            className="px-2 py-1 rounded-md"
                             onClick={() => {
-                              setItineraryEdit(itinerary.itineraryId);
+                              setOpenDropdown(itinerary.itineraryId);
                             }}
                           >
-                            <Pencil className="w-4 h-4" />
+                            <Ellipsis className="w-5 h-5" />
                           </button>
-                          <button
-                            className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
-                            onClick={() => setItineraryDelete(itinerary.itineraryId)}
-                          >
-                            <Trash className="w-4 h-4" />
-                          </button>
+                          {openDropdown === itinerary.itineraryId && (
+                            <div className="absolute right-0 top-0 mt-2 w-48 bg-white shadow-md rounded-md z-50">
+                              <button
+                                onClick={() => {
+                                  setOpenDropdown(null);
+                                  setItineraryEdit(itinerary.itineraryId);
+                                }}
+                                className="flex items-center px-4 py-2 hover:bg-gray-100 w-full text-left"
+                              >
+                                Cập nhật lịch trình
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setOpenDropdown(null);
+                                  setItineraryImageOpen(itinerary.itineraryId);
+                                }}
+                                className="flex items-center px-4 py-2 hover:bg-gray-100 w-full text-left"
+                              >
+                                Cập nhật ảnh
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setOpenDropdown(null);
+                                  setItineraryDelete(itinerary.itineraryId);
+                                }}
+                                className="flex items-center px-4 py-2 hover:bg-gray-100 w-full text-left text-red-600"
+                              >
+                                Xóa lịch trình
+                              </button>
+                            </div>
+                          )}
                           {itineraryDelete === itinerary.itineraryId && (
                             <div className="fixed inset-0 bg-black/30 bg-opacity-40 flex items-center justify-center z-50">
                               <div className="bg-white rounded-lg shadow-lg w-[320px] p-6 animate-fade-in">
@@ -142,9 +179,20 @@ const ItineraryListModal = ({ open, onClose, tourId }) => {
               </div>
             </div>
             <ItineraryDetailsModal
+              open={itineraryEdit}
+              onClose={() => setItineraryEdit(null)}
+              tourId={tourId}
+              itineraryId={itineraryEdit}
+            />
+            <ItineraryDetailsModal
               open={isAddItineraryOpen}
               onClose={() => setIsAddItineraryOpen(false)}
               tourId={tourId}
+            />
+            <ItineraryImageModal
+              open={itineraryImageOpen}
+              onClose={() => setItineraryImageOpen(false)}
+              itineraryId={itineraryImageOpen}
             />
           </div>
         </div>

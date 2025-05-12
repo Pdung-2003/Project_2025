@@ -4,18 +4,17 @@ import PropTypes from 'prop-types';
 import TextFieldControl from '../common/TextFieldControl';
 import UploadImageControl from '../common/UploadImageControl';
 import SelectControl from '@/components/common/SelectControl';
-import { useEffect } from 'react';
-import { useUserActions } from '@/hooks/useUserActions';
-import { useUserDispatch, useUserState } from '@/contexts/UserContext';
+import { useEffect, useMemo } from 'react';
+import { useUserState } from '@/contexts/UserContext';
 import { tourService } from '@/services';
 import { toast } from 'react-toastify';
 import { useTourDispatch, useTourState } from '@/contexts/TourContext';
 import { useTourActions } from '@/hooks/useTourActions';
+import { useAuthState } from '@/contexts/AuthContext';
 
 const AddTourModal = ({ open, onClose, tourId }) => {
-  const { fetchManagers } = useUserActions();
+  const { user } = useAuthState();
   const { fetchTourById } = useTourActions();
-  const dispatch = useUserDispatch();
   const dispatchTour = useTourDispatch();
   const { pagination, tour } = useTourState();
   const { managers } = useUserState();
@@ -36,6 +35,10 @@ const AddTourModal = ({ open, onClose, tourId }) => {
     banner: null,
   });
 
+  const isTourManager = useMemo(() => {
+    return user?.roles?.some((role) => role.name === 'TOUR_MANAGER');
+  }, [user?.roles]);
+
   const handleClose = () => {
     reset();
     onClose();
@@ -51,6 +54,7 @@ const AddTourModal = ({ open, onClose, tourId }) => {
         price: Number(rest.price),
         discount: rest.discount ? Number(rest.discount) : null,
         maxCapacity: Number(rest.maxCapacity),
+        managerId: isTourManager ? user?.id : rest?.managerId,
       };
 
       const formData = new FormData();
@@ -96,13 +100,6 @@ const AddTourModal = ({ open, onClose, tourId }) => {
       fetchTourById(tourId);
     }
   }, [tourId]);
-
-  useEffect(() => {
-    fetchManagers();
-    return () => {
-      dispatch({ type: 'RESET_STATE' });
-    };
-  }, []);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -188,15 +185,17 @@ const AddTourModal = ({ open, onClose, tourId }) => {
                     label="Sức chứa"
                     rules={{ required: 'Vui lòng nhập sức chứa' }}
                   />
-                  <SelectControl
-                    control={control}
-                    name="managerId"
-                    label="Quản lý"
-                    options={managers.map((manager) => ({
-                      label: manager.fullName,
-                      value: manager.id,
-                    }))}
-                  />
+                  {!isTourManager && (
+                    <SelectControl
+                      control={control}
+                      name="managerId"
+                      label="Quản lý"
+                      options={managers.map((manager) => ({
+                        label: manager.fullName,
+                        value: manager.id,
+                      }))}
+                    />
+                  )}
                   <TextFieldControl
                     control={control}
                     name="startDate"

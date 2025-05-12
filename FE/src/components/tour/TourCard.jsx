@@ -1,9 +1,15 @@
 import { MapPin } from 'lucide-react';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 
 const TourCard = ({ tour }) => {
+  const navigate = useNavigate();
+
   return (
-    <div className="w-full max-w-sm bg-white shadow-md border border-gray-300 overflow-hidden flex flex-col">
+    <div
+      className="w-full max-w-sm bg-white shadow-md border border-gray-300 overflow-hidden flex flex-col hover:shadow-lg transition-all duration-300 cursor-pointer"
+      onClick={() => navigate(`/tour-details/${tour?.tourId}`)}
+    >
       {/* Hình ảnh */}
       <div className="h-[200px] aspect-[3/2] bg-gray-100 relative">
         <img src={tour.tourBanner} alt="Tour Image" className="w-full h-full object-contain" />
@@ -12,7 +18,9 @@ const TourCard = ({ tour }) => {
       {/* Nội dung */}
       <div className="flex flex-col p-4 flex-grow">
         {/* Tiêu đề */}
-        <h2 className="text-lg font-semibold text-gray-800 mb-2">{tour.tourName}</h2>
+        <h2 className="text-lg font-semibold text-gray-800 mb-2 hover:text-blue-500">
+          {tour.tourName}
+        </h2>
 
         {/* Đánh giá */}
         {/* <div className="flex items-center gap-2 mb-2">

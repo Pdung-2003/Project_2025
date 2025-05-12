@@ -1,7 +1,17 @@
+import { useAuthState } from '@/contexts/AuthContext';
 import { HomeIcon, MapIcon, UserIcon } from 'lucide-react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 const Sidebar = () => {
+  const { user } = useAuthState();
+  const sidebarItems = useMemo(() => {
+    if (user?.roles?.some((role) => role.name === 'ADMIN')) {
+      return SIDEBAR_ITEMS;
+    }
+    return SIDEBAR_ITEMS.filter((item) => item.path !== '/user-manager');
+  }, [user?.roles]);
+
   return (
     <div className="w-[250px] h-full flex flex-col items-center border-r border-gray-200 bg-[var(--primary)]">
       <div className="py-4 px-5">
@@ -12,7 +22,7 @@ const Sidebar = () => {
         />
       </div>
       <div className="flex flex-col w-full spacing-y-2 px-5">
-        {SIDEBAR_ITEMS.map((item) => (
+        {sidebarItems.map((item) => (
           <Link to={item.path} key={item.path} className="w-full">
             <button className="flex flex-row justify-start gap-2 w-full text-white p-2 hover:bg-[var(--primary-hover)] rounded-md">
               {item.icon}

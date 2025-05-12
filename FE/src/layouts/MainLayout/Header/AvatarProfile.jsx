@@ -3,13 +3,14 @@ import { useAuthState } from '@/contexts/AuthContext';
 import { useAuthActions } from '@/hooks/useAuthActions';
 import { Cog, LayoutDashboard, LogOut, Truck, User } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const AvatarProfile = () => {
   const { logout } = useAuthActions();
   const { user } = useAuthState();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   const isManager = useMemo(() => {
     return user?.roles.some((role) => role.name === 'TOUR_MANAGER');
@@ -85,7 +86,10 @@ const AvatarProfile = () => {
             <li>
               <button
                 className="w-full text-left hover:bg-gray-100 px-2 py-1 text-red-600"
-                onClick={logout}
+                onClick={() => {
+                  logout();
+                  navigate('/');
+                }}
               >
                 <LogOut className="inline mr-2" />
                 Đăng xuất
