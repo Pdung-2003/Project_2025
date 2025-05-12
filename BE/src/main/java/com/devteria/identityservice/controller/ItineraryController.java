@@ -23,7 +23,7 @@ public class ItineraryController {
     private final ItineraryService itineraryService;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TOUR_MANAGER')")
     public ResponseEntity<ApiResponse<ItineraryResponse>> createItinerary(@RequestBody ItineraryRequest request) {
         log.info("API add itinerary for tour with id: {}", request.getTourId());
 
@@ -34,7 +34,7 @@ public class ItineraryController {
     }
 
     @PutMapping("/upload-image/{itineraryId}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TOUR_MANAGER')")
     public ResponseEntity<ApiResponse<ItineraryResponse>> uploadImageForItinerary(@PathVariable @Min(1) Integer itineraryId,
                                                                                   @RequestPart MultipartFile[] files
     ) {
@@ -47,7 +47,7 @@ public class ItineraryController {
     }
 
     @PutMapping("/{itineraryId}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TOUR_MANAGER')")
     public ResponseEntity<ApiResponse<ItineraryResponse>> updateItinerary(@RequestBody ItineraryRequest request,
                                                                           @PathVariable @Min(1) Integer itineraryId
     ) {
@@ -60,7 +60,7 @@ public class ItineraryController {
     }
 
     @DeleteMapping("/{itineraryId}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TOUR_MANAGER')")
     public ResponseEntity<ApiResponse<Void>> updateItinerary(@PathVariable @Min(1) Integer itineraryId) {
         log.info("API delete itinerary with id: {}", itineraryId);
         itineraryService.delete(itineraryId);
