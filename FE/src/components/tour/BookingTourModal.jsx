@@ -22,8 +22,12 @@ const BookingTourModal = ({ open, onClose, tourId }) => {
 
   const onSubmit = async (data) => {
     try {
-      await bookingService.createBooking({ ...data, tourId, customerId: user?.id });
-      toast.success('Đặt tour thành công');
+      await bookingService.createBooking({
+        ...data,
+        tourId: Number(tourId),
+        customerId: user?.id,
+      });
+      toast.success('Đặt tour thành công. Vui lòng kiểm tra lại đơn hàng');
       handleClose();
     } catch (error) {
       toast.error(error?.response?.data?.message || 'Lỗi khi đặt tour');
@@ -66,10 +70,14 @@ const BookingTourModal = ({ open, onClose, tourId }) => {
             <button
               className="border border-gray-200 rounded-xs px-4 py-2 hover:bg-gray-100"
               onClick={handleClose}
+              type="button"
             >
               Đóng
             </button>
-            <button className="bg-blue-700 text-white rounded-xs px-4 py-2 hover:bg-blue-800">
+            <button
+              type="submit"
+              className="bg-blue-700 text-white rounded-xs px-4 py-2 hover:bg-blue-800"
+            >
               Đặt tour
             </button>
           </>

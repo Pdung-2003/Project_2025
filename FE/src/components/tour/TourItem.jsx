@@ -1,9 +1,15 @@
 import { Edit } from 'lucide-react';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 
 const TourItem = ({ tour, isManager = false }) => {
+  const navigate = useNavigate();
+
   return (
-    <div className="flex flex-row bg-white overflow-hidden border border-gray-200 h-full w-full cursor-pointer">
+    <div
+      className="flex flex-row bg-white overflow-hidden border border-gray-200 h-full w-full cursor-pointer"
+      onClick={() => navigate(`/tour-details/${tour?.tourId}`)}
+    >
       {/* Image */}
       <div className="w-1/3 aspect-[3/2] bg-gray-100">
         <img src={tour?.tourBanner} alt="Tour Image" className="w-full h-full object-contain" />

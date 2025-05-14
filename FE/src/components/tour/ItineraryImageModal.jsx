@@ -72,7 +72,7 @@ const ItineraryImageModal = ({ open, onClose, itineraryId }) => {
           <div className="flex flex-col bg-white rounded-xs p-5 gap-4">
             <div className="flex justify-between items-center">
               <p className="text-lg font-bold">Ảnh lịch trình</p>
-              <button className="btn-primary" onClick={handleAddImageClick}>
+              <button className="btn-primary" onClick={handleAddImageClick} type="button">
                 Thêm ảnh
               </button>
               <input
@@ -118,6 +118,7 @@ const ItineraryImageModal = ({ open, onClose, itineraryId }) => {
               <button
                 className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
                 onClick={() => setDeleteImageId(null)}
+                type="button"
               >
                 Hủy
               </button>

@@ -9,3 +9,8 @@ export const createBooking = async (data) => {
   const response = await mainRequest.post(`/api/bookings/create`, data);
   return response.data;
 };
+
+export const createPayment = async (bookingId) => {
+  const response = await mainRequest.post(`/api/payments/booking/${bookingId}`);
+  return response.data;
+};

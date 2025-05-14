@@ -1,7 +1,7 @@
 import { IMAGE_CONSTANT } from '@/constants/image.constant';
 import { useAuthState } from '@/contexts/AuthContext';
 import { useAuthActions } from '@/hooks/useAuthActions';
-import { Cog, LayoutDashboard, LogOut, Truck, User } from 'lucide-react';
+import { Cog, LayoutDashboard, LogOut, User } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -77,12 +77,6 @@ const AvatarProfile = () => {
                 </Link>
               </li>
             )}
-            <li>
-              <Link to={`/order`} className="w-full text-left hover:bg-gray-100 px-2 py-1 flex">
-                <Truck className="mr-2" />
-                Đơn hàng
-              </Link>
-            </li>
             <li>
               <button
                 className="w-full text-left hover:bg-gray-100 px-2 py-1 text-red-600"

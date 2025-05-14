@@ -47,7 +47,8 @@ const AdminAuthentication = () => {
         navigate('/dashboard');
       } else if (
         user?.roles?.some((role) => role.name === 'USER') &&
-        (!USER_PRIVATE_ROUTES.includes(pathname) || !PUBLIC_ROUTES.includes(pathname))
+        (!USER_PRIVATE_ROUTES.some((route) => route.path === pathname) ||
+          !PUBLIC_ROUTES.some((route) => route.path === pathname))
       ) {
         navigate('/');
       }

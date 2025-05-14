@@ -221,7 +221,11 @@ const AddTourModal = ({ open, onClose, tourId }) => {
         }
         action={
           <>
-            <button className="border border-gray-200 rounded-xs px-4 py-2" onClick={handleClose}>
+            <button
+              className="border border-gray-200 rounded-xs px-4 py-2"
+              onClick={handleClose}
+              type="button"
+            >
               Đóng
             </button>
             <button type="submit" className="bg-blue-700 text-white rounded-xs px-4 py-2">

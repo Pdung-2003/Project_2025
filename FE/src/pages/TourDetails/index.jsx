@@ -1,5 +1,6 @@
 import BookingTourModal from '@/components/tour/BookingTourModal';
 import ItineraryDay from '@/components/tour/ItineraryDay';
+import { useAuthState } from '@/contexts/AuthContext';
 import { useItineraryState } from '@/contexts/ItineraryContext';
 import { useTourState } from '@/contexts/TourContext';
 import { useItineraryActions } from '@/hooks/useItineraryActions';
@@ -15,6 +16,7 @@ const TourDetails = () => {
   const { fetchItineraries } = useItineraryActions();
   const { tour } = useTourState();
   const { itineraries } = useItineraryState();
+  const { user } = useAuthState();
   const [isBookingTourModalOpen, setIsBookingTourModalOpen] = useState(false);
 
   useEffect(() => {
@@ -75,9 +77,11 @@ const TourDetails = () => {
 
           <button
             className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 rounded-lg"
-            onClick={() => setIsBookingTourModalOpen(true)}
+            onClick={() => {
+              setIsBookingTourModalOpen(true);
+            }}
           >
-            Gửi yêu cầu
+            {user ? 'Đặt Tour' : 'Gửi yêu cầu'}
           </button>
         </div>
       </div>
