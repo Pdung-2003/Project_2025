@@ -12,6 +12,7 @@ import PublicAuthentication from './PublicAuthentication';
 import TourDetails from './pages/TourDetails';
 import Authentication from './Authentication';
 import Checkout from './pages/Checkout';
+import RequestBooking from './pages/Dashboard/RequestBooking';
 
 function App() {
   return (
@@ -97,5 +98,9 @@ export const PRIVATE_ROUTES = [
   {
     path: '/tour-manager',
     element: TourManager,
+  },
+  {
+    path: '/request-booking',
+    element: RequestBooking,
   },
 ];

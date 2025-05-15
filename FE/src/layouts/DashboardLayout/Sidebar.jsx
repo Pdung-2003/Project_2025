@@ -1,5 +1,5 @@
 import { useAuthState } from '@/contexts/AuthContext';
-import { HomeIcon, MapIcon, UserIcon } from 'lucide-react';
+import { HomeIcon, MapIcon, Truck, UserIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -52,5 +52,10 @@ const SIDEBAR_ITEMS = [
     label: 'Tour Manager',
     icon: <MapIcon />,
     path: '/tour-manager',
+  },
+  {
+    label: 'Request Booking',
+    icon: <Truck />,
+    path: '/request-booking',
   },
 ];

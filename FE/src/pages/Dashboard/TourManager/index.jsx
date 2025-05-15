@@ -17,7 +17,7 @@ const TourManager = () => {
   const dispatchUser = useUserDispatch();
   const dispatch = useTourDispatch();
   const { fetchTours } = useTourActions();
-  const { tours, filter, pagination } = useTourState();
+  const { tours, filter, pagination, totalElements } = useTourState();
   const [isConfirmOpen, setIsConfirmOpen] = useState(null);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isAddTourOpen, setIsAddTourOpen] = useState(false);
@@ -80,7 +80,7 @@ const TourManager = () => {
     const heightWindow = window.innerHeight;
     const paginationHeight = document.getElementById('pagination').getBoundingClientRect().height;
     const tableTop = tableEl.getBoundingClientRect().top;
-    tableEl.style.height = `${heightWindow - tableTop - paginationHeight - 2}px`;
+    tableEl.style.height = `${heightWindow - tableTop - paginationHeight - 5}px`;
   }, []);
 
   return (
@@ -102,7 +102,7 @@ const TourManager = () => {
         </div>
       </div>
       <div className="flex flex-col flex-1 mx-2 border border-gray-300 h-full overflow-visible">
-        <div id="table-container" className="overflow-visible">
+        <div id="table-container" className="overflow-auto">
           <table id="table" className="w-full table-auto border-separate z-10">
             <thead className="bg-gray-100 sticky top-0 z-20">
               <tr>
@@ -216,7 +216,10 @@ const TourManager = () => {
           id="pagination"
           className="flex justify-between items-center gap-2 p-2 bg-white border-t border-gray-300"
         >
-          <p className="text-sm text-gray-500">Hiển thị 1 đến 10 trên 20 kết quả</p>
+          <p className="text-sm text-gray-500">
+            Hiển thị {(pagination?.pageNumber - 1) * pagination?.pageSize + 1} đến{' '}
+            {pagination?.pageNumber * pagination?.pageSize} trên {totalElements} kết quả
+          </p>
           <div className="flex items-center gap-2">
             <button className="border border-gray-300 bg-white px-2 py-1 rounded-md hover:bg-gray-100">
               Trước

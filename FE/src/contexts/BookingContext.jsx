@@ -1,8 +1,17 @@
+import { DEFAULT_PAGINATION } from '@/constants/app.constant';
 import PropTypes from 'prop-types';
 import { createContext, useContext, useReducer } from 'react';
 
 const initialState = {
   booking: [],
+  pagination: DEFAULT_PAGINATION,
+  filter: {
+    fromDate: null,
+    toDate: null,
+    status: '',
+  },
+  totalElements: 0,
+  totalPages: 0,
   loading: false,
   error: null,
 };
@@ -10,7 +19,16 @@ const initialState = {
 function bookingReducer(state, action) {
   switch (action.type) {
     case 'SET_BOOKING':
-      return { ...state, booking: action.payload };
+      return {
+        ...state,
+        booking: action.payload.bookings,
+        totalElements: action.payload.totalElements,
+        totalPages: action.payload.totalPages,
+      };
+    case 'SET_PAGINATION':
+      return { ...state, pagination: { ...state.pagination, ...action.payload } };
+    case 'SET_FILTER':
+      return { ...state, filter: action.payload };
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
     case 'SET_ERROR':

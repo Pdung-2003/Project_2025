@@ -80,13 +80,13 @@ public class BookingService {
     @Transactional(readOnly = true)
     public Page<BookingResponse> getAllBookings(BookingFilterRequest request) {
         Sort sort = Sort.unsorted();
-        if (!request.getSort().isEmpty()) {
+        if (request.getSort() != null && !request.getSort().isEmpty()) {
             for (SortField s : request.getSort()) {
                 sort.and(Sort.by(s.getDirection(), s.getProperty()));
             }
         }
 
-        Pageable pageable = PageRequest.of(request.getPageNumber(), request.getPageSize(), sort);
+        Pageable pageable = PageRequest.of(request.getPageNumber() - 1, request.getPageSize(), sort);
         Page<Booking> bookings = bookingRepository.findAllByFilter(
                 request.getUserId(), request.getTourId(),
                 request.getBookingCode(),

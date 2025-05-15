@@ -186,7 +186,7 @@ public class VNPayService {
             String vnpTransactionNo = request.getParameter("vnp_TransactionNo");
             String vnpPayDate = request.getParameter("vnp_PayDate");
             LocalDateTime payDate = convertToLocalDateTime(vnpPayDate);
-            String bookingCode = vnpOrderInfo.substring("Nap tien cho nguoi dung ".length());
+            String bookingCode = vnpOrderInfo.substring("Thanh toan hoa don ".length());
             Booking booking = bookingService.getBooking(bookingCode);
             Payment payment = paymentRepository.findByBookingCodeAndTransRef(bookingCode, vnpTxnRef);
             payment.setTransactionId(vnpTransactionNo);

@@ -10,6 +10,13 @@ export const USER_MANAGER_TABS = {
   LOGOUT: 'logout',
 };
 
+export const BOOKING_STATUS = {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  PAID: 'PAID',
+  CANCELLED: 'CANCELLED',
+};
+
 export const DEFAULT_PAGINATION = {
   pageNumber: 1,
   pageSize: 10,

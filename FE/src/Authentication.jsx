@@ -3,7 +3,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthActions } from './hooks/useAuthActions';
 import { useAuthDispatch, useAuthState } from './contexts/AuthContext';
 import { introspect } from './services/auth.service';
-import { PRIVATE_ROUTES, PUBLIC_ROUTES, USER_PRIVATE_ROUTES } from './App';
+import { PRIVATE_ROUTES } from './App';
 
 const Authentication = () => {
   const { fetchProfile } = useAuthActions();
@@ -32,8 +32,6 @@ const Authentication = () => {
     };
 
     if (!token) {
-      console.log('run');
-
       navigate('/');
     } else {
       fetchValidToken();
@@ -42,24 +40,19 @@ const Authentication = () => {
 
   useEffect(() => {
     if (user) {
-      console.log('run 2', user, pathname);
-
       if (
         user?.roles?.some((role) => role.name === 'ADMIN') &&
-        !PRIVATE_ROUTES.includes(pathname)
+        !PRIVATE_ROUTES.some((route) => route.path === pathname)
       ) {
         navigate('/dashboard');
       } else if (
         user?.roles?.some((role) => role.name === 'USER') &&
-        (!USER_PRIVATE_ROUTES.some((route) => route.path === pathname) ||
-          !PUBLIC_ROUTES.some((route) => route.path === pathname))
+        PRIVATE_ROUTES.some((route) => route.path === pathname)
       ) {
-        console.log('run 3', pathname);
-
         navigate('/');
       }
     }
-  }, [user]);
+  }, [user, pathname]);
 
   return <Outlet />;
 };

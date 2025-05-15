@@ -51,8 +51,9 @@ const UploadMultipleImagesControl = ({ label, name, control, rules, imageProps, 
 
   return (
     <div className="flex flex-col gap-2 bg-white" {...props}>
-      <label className="mb-1 font-bold text-lg p-2 border-b border-gray-200">{label}</label>
-
+      {label && (
+        <label className="mb-1 font-bold text-lg p-2 border-b border-gray-200">{label}</label>
+      )}
       <Controller
         name={name}
         control={control}
