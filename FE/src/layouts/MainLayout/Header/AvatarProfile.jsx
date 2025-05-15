@@ -49,12 +49,14 @@ const AvatarProfile = () => {
       {isDropdownOpen && (
         <div className="absolute right-0 mt-2 bg-white shadow-md rounded-lg w-48 z-50 border border-gray-300">
           <ul className="space-y-2 p-2 text-sm text-gray-700">
-            <li>
-              <Link to={`/profile`} className="w-full text-left hover:bg-gray-100 px-2 py-1 flex">
-                <User className="mr-2" />
-                Hồ sơ cá nhân
-              </Link>
-            </li>
+            {!isAdmin && !isManager && (
+              <li>
+                <Link to={`/profile`} className="w-full text-left hover:bg-gray-100 px-2 py-1 flex">
+                  <User className="mr-2" />
+                  Hồ sơ cá nhân
+                </Link>
+              </li>
+            )}
             {isAdmin && (
               <li>
                 <Link

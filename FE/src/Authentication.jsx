@@ -44,7 +44,7 @@ const Authentication = () => {
         user?.roles?.some((role) => role.name === 'ADMIN') &&
         !PRIVATE_ROUTES.some((route) => route.path === pathname)
       ) {
-        navigate('/dashboard');
+        navigate('/user-manager');
       } else if (
         user?.roles?.some((role) => role.name === 'USER') &&
         PRIVATE_ROUTES.some((route) => route.path === pathname)

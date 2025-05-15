@@ -1,5 +1,5 @@
 import { useAuthState } from '@/contexts/AuthContext';
-import { HomeIcon, MapIcon, Truck, UserIcon } from 'lucide-react';
+import { MapIcon, Truck, UserIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -7,7 +7,7 @@ const Sidebar = () => {
   const { user } = useAuthState();
   const sidebarItems = useMemo(() => {
     if (user?.roles?.some((role) => role.name === 'ADMIN')) {
-      return SIDEBAR_ITEMS;
+      return SIDEBAR_ITEMS.filter((item) => item.path !== '/request-booking');
     }
     return SIDEBAR_ITEMS.filter((item) => item.path !== '/user-manager');
   }, [user?.roles]);
@@ -38,11 +38,11 @@ const Sidebar = () => {
 export default Sidebar;
 
 const SIDEBAR_ITEMS = [
-  {
-    label: 'Dashboard',
-    icon: <HomeIcon />,
-    path: '/dashboard',
-  },
+  // {
+  //   label: 'Dashboard',
+  //   icon: <HomeIcon />,
+  //   path: '/dashboard',
+  // },
   {
     label: 'User Manager',
     icon: <UserIcon />,

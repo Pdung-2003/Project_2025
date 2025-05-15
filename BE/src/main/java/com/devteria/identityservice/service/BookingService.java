@@ -94,6 +94,7 @@ public class BookingService {
                 request.getFromDate(), request.getToDate(),
                 request.getIsTicketSent(),
                 request.getMinPrice(), request.getMaxPrice(),
+                request.getManagerId(),
                 pageable);
 
         return bookings.map(bookingMapper::toResponse);

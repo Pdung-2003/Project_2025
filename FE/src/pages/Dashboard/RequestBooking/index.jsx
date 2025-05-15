@@ -1,16 +1,28 @@
 import { BOOKING_STATUS } from '@/constants/app.constant';
+import { useAuthState } from '@/contexts/AuthContext';
 import { useBookingDispatch, useBookingState } from '@/contexts/BookingContext';
 import { useBookingActions } from '@/hooks/useBookingActions';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 const RequestBooking = () => {
   const dispatch = useBookingDispatch();
+  const { user } = useAuthState();
   const { fetchBookingRequests, changeBookingStatus } = useBookingActions();
   const { booking, pagination, filter, totalElements } = useBookingState();
 
+  const isTourManager = useMemo(() => {
+    return user?.roles?.some((role) => role.name === 'TOUR_MANAGER');
+  }, [user?.roles]);
+
   useEffect(() => {
-    fetchBookingRequests({ ...pagination, ...filter });
-  }, [pagination, filter]);
+    if (user) {
+      fetchBookingRequests({
+        ...pagination,
+        ...filter,
+        managerId: isTourManager ? user?.id : null,
+      });
+    }
+  }, [pagination, filter, isTourManager, user]);
 
   useEffect(() => {
     const tableEl = document.getElementById('table-container');

@@ -2,7 +2,6 @@ import './App.css';
 import { Route, Routes } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import HomePage from './pages/Home';
-import Dashboard from './pages/Dashboard';
 import UserManager from './pages/Dashboard/UserManager';
 import DashboardLayout from './layouts/DashboardLayout';
 import Profile from '@/pages/Profile';
@@ -87,10 +86,6 @@ export const USER_PRIVATE_ROUTES = [
 ];
 
 export const PRIVATE_ROUTES = [
-  {
-    path: '/dashboard',
-    element: Dashboard,
-  },
   {
     path: '/user-manager',
     element: UserManager,
