@@ -28,7 +28,7 @@ public class SecurityConfig {
         "/users/send-reset-password-code", "/users/reset-password",
         "/api/tours/search",
         "/api/feedbacks/tour-avg-rating/{tourId}", "/api/feedbacks/tour/{tourId}",
-        "/api/qna/{qnaId}"
+        "/api/qna/{qnaId}", "/api/vn-pay/checksum-redirect"
     };
 
     private final CustomJwtDecoder customJwtDecoder;
