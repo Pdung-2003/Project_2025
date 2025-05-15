@@ -74,12 +74,14 @@ const BookingTourModal = ({ open, onClose, tourId }) => {
             >
               Đóng
             </button>
-            <button
-              type="submit"
-              className="bg-blue-700 text-white rounded-xs px-4 py-2 hover:bg-blue-800"
-            >
-              Đặt tour
-            </button>
+            {user && (
+              <button
+                type="submit"
+                className="bg-blue-700 text-white rounded-xs px-4 py-2 hover:bg-blue-800"
+              >
+                Đặt tour
+              </button>
+            )}
           </>
         }
       />

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getQnAByTour, createQuestion, replyQnA } from '@/services/qna.service';
 import PropTypes from 'prop-types';
+import { useAuthState } from '@/contexts/AuthContext';
 
 function QnAItem({ qna, onReply, replyingId, onReplySubmit }) {
   const [replyContent, setReplyContent] = useState('');
@@ -72,6 +73,7 @@ export default function QuestionSection({ tourId }) {
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
   const [replyingId, setReplyingId] = useState(null);
+  const { user } = useAuthState();
 
   const fetchQnA = async () => {
     setLoading(true);
@@ -103,19 +105,24 @@ export default function QuestionSection({ tourId }) {
   return (
     <div className="bg-white rounded-xl p-5 mt-8 shadow">
       <h2 className="text-xl font-bold mb-4">Hỏi đáp về tour</h2>
-      <form className="mb-6 flex flex-col gap-2" onSubmit={handleCreateQuestion}>
-        <textarea
-          className="border rounded p-2 text-sm"
-          rows={2}
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          placeholder="Đặt câu hỏi cho tour này..."
-          required
-        />
-        <button type="submit" className="self-end bg-blue-500 text-white px-4 py-1 rounded text-sm">
-          Gửi câu hỏi
-        </button>
-      </form>
+      {user && (
+        <form className="mb-6 flex flex-col gap-2" onSubmit={handleCreateQuestion}>
+          <textarea
+            className="border rounded p-2 text-sm"
+            rows={2}
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder="Đặt câu hỏi cho tour này..."
+            required
+          />
+          <button
+            type="submit"
+            className="self-end bg-blue-500 text-white px-4 py-1 rounded text-sm"
+          >
+            Gửi câu hỏi
+          </button>
+        </form>
+      )}
       {loading ? (
         <div>Đang tải...</div>
       ) : (
