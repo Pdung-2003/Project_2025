@@ -27,7 +27,8 @@ public class SecurityConfig {
         "/users/register", "/users/send-verification-code", "/users/verify-email",
         "/users/send-reset-password-code", "/users/reset-password",
         "/api/tours/search",
-        "/api/feedbacks/tour-avg-rating/{tourId}", "/api/feedbacks/tour/{tourId}"
+        "/api/feedbacks/tour-avg-rating/{tourId}", "/api/feedbacks/tour/{tourId}",
+        "/api/qna/{qnaId}"
     };
 
     private final CustomJwtDecoder customJwtDecoder;
@@ -40,6 +41,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/itineraries/{itineraryId}").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/itineraries/tour/{tourId}").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/feedbacks/{feedbackId}").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/qna").permitAll()
                 .anyRequest().authenticated());
 
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer

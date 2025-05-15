@@ -1,5 +1,6 @@
 package com.devteria.identityservice.service;
 
+import com.devteria.identityservice.constant.PredefinedRole;
 import com.devteria.identityservice.dto.request.TourFilterRequest;
 import com.devteria.identityservice.dto.request.TourRequest;
 import com.devteria.identityservice.dto.response.TourResponse;
@@ -8,6 +9,7 @@ import com.devteria.identityservice.entity.User;
 import com.devteria.identityservice.exception.AppException;
 import com.devteria.identityservice.exception.BadRequestException;
 import com.devteria.identityservice.exception.ErrorCode;
+import com.devteria.identityservice.exception.ForbiddenException;
 import com.devteria.identityservice.mapper.TourMapper;
 import com.devteria.identityservice.repository.TourRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,7 +65,10 @@ public class TourService {
 
     @Transactional(rollbackFor = Exception.class)
     public TourResponse updateTour(Long tourId, TourRequest tourRequest, MultipartFile file) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Tour existingTour = getTour(tourId);
+        Long managerId = existingTour.getManager().getId();
+        assertCanModifyBooking(authentication, managerId);
         if(tourRequest != null) {
             existingTour = updateTourData(existingTour, tourRequest);
         }
@@ -123,7 +130,11 @@ public class TourService {
 
     // Xóa tour
     public void deleteTour(Long tourId) {
-        tourRepository.deleteById(tourId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();;
+        Tour existingTour = getTour(tourId);
+        Long managerId = existingTour.getManager().getId();
+        assertCanModifyBooking(authentication, managerId);
+        tourRepository.delete(existingTour);
     }
 
     public void holdTicketForTour(Tour tour, Integer numberOfTicket) {
@@ -134,5 +145,20 @@ public class TourService {
             throw new BadRequestException("No available slots");
         }
         tourRepository.save(tour);
+    }
+
+    private boolean isRoleAdmin(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_" + PredefinedRole.ADMIN_ROLE));
+    }
+
+    private void assertCanModifyBooking(Authentication authentication, Long managerId) {
+        if(!isRoleAdmin(authentication)) {
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            User manager = userService.getUser(username);
+            if (!manager.getId().equals(managerId)) {
+                throw new ForbiddenException("You don't have permission");
+            }
+        }
     }
 }

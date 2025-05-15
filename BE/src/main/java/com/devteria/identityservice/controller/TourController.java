@@ -26,7 +26,7 @@ public class TourController {
 
     // Tạo tour mới
     @PostMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TOUR_MANAGER')")
     public ResponseEntity<ApiResponse<TourResponse>> createTour(@RequestPart(name = "tour") TourRequest tourRequest,
                                                                 @RequestPart(name = "banner") MultipartFile file
     ) {
@@ -40,7 +40,7 @@ public class TourController {
 
     // Cập nhật tour
     @PutMapping("/{tourId}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TOUR_MANAGER')")
     public ResponseEntity<TourResponse> updateTour(@PathVariable Long tourId,
                                                    @RequestPart(name = "tour", required = false) TourRequest tourRequest,
                                                    @RequestPart(name = "banner", required = false) MultipartFile file
@@ -73,7 +73,7 @@ public class TourController {
 
      //Xóa tour
     @DeleteMapping("/{tourId}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_TOUR_MANAGER')")
     public ResponseEntity<Void> deleteTour(@PathVariable Long tourId) {
         tourService.deleteTour(tourId);
         return ResponseEntity.noContent().build();

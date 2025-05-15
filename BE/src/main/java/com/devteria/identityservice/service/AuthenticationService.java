@@ -79,7 +79,7 @@ public class AuthenticationService {
 
         if (!authenticated) throw new AppException(ErrorCode.UNAUTHENTICATED);
 
-        if (user.getEmailVerified().equals(false)) throw new AuthenticationException("Email not verified");
+//        if (user.getEmailVerified().equals(false)) throw new AuthenticationException("Email not verified");
 
         var token = generateToken(user);
 

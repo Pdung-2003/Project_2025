@@ -118,34 +118,5 @@ public class UserController {
                 .result(userService.getUserWithManagersRole())
                 .build();
     }
-
-    // yêu cầu gửi mã xác minh đến email
-    @GetMapping("/send-verification-code")
-    public ResponseEntity<Void> sendVerificationCode(@RequestParam String username) {
-        log.info("API request verification code for user: {}", username);
-        userService.sendVerificationCode(username);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/verify-email")
-    public ResponseEntity<Void> verifyEmail(@RequestBody VerifyEmailRequest request) {
-        log.info("API verify email for user: {}", request.getUsername());
-        userService.verifyEmail(request);
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/send-reset-password-code")
-    public ResponseEntity<Void> sendPasswordResetCode(@RequestParam String username) {
-        log.info("API request reset password for user: {}", username);
-        userService.sendResetPasswordCode(username);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/reset-password")
-    public ResponseEntity<Void> resetPassword(@RequestBody ResetPasswordRequest request) {
-        log.info("API request change new password for user: {}", request.getUsername());
-        userService.resetPassword(request);
-        return ResponseEntity.ok().build();
-    }
 }
 
