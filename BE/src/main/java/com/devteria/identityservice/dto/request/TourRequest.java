@@ -16,7 +16,7 @@ public class TourRequest {
     private String location;
     private String destination;
     private BigDecimal price;
-    private Double discount;
+    private BigDecimal discount;
     private Long managerId; // managerId để ánh xạ với User entity
     private String companyName;
     private Integer maxCapacity;

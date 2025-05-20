@@ -53,7 +53,7 @@ public class Tour {
 
     private Integer availableTicket;
 
-    private Double discount = 0.0;
+    private BigDecimal discount;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate startDate; // Ngày bắt đầu tour
