@@ -8,7 +8,7 @@ const RequestBooking = () => {
   const dispatch = useBookingDispatch();
   const { user } = useAuthState();
   const { fetchBookingRequests, changeBookingStatus } = useBookingActions();
-  const { booking, pagination, filter, totalElements } = useBookingState();
+  const { booking, pagination, filter, totalElements, totalPages } = useBookingState();
 
   const isTourManager = useMemo(() => {
     return user?.roles?.some((role) => role.name === 'TOUR_MANAGER');
@@ -93,7 +93,9 @@ const RequestBooking = () => {
             <tbody>
               {booking.map((booking, index) => (
                 <tr key={booking.bookingId} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 text-center p-2">{index + 1}</td>
+                  <td className="border border-gray-300 text-center p-2">
+                    {index + 1 + (pagination?.pageNumber - 1) * pagination?.pageSize}
+                  </td>
                   <td className="border border-gray-300 p-2">{booking.tourName}</td>
                   <td className="border border-gray-300 p-2 text-center">{booking.tourDate}</td>
                   <td className="border border-gray-300 p-2 text-right">
@@ -161,10 +163,28 @@ const RequestBooking = () => {
             {pagination?.pageNumber * pagination?.pageSize} trên {totalElements} kết quả
           </p>
           <div className="flex items-center gap-2">
-            <button className="border border-gray-300 bg-white px-2 py-1 rounded-md hover:bg-gray-100">
+            <button
+              className="border border-gray-300 bg-white px-2 py-1 rounded-md hover:bg-gray-100"
+              onClick={() =>
+                dispatch({
+                  type: 'SET_PAGINATION',
+                  payload: { ...pagination, pageNumber: pagination.pageNumber - 1 },
+                })
+              }
+              disabled={pagination.pageNumber === 1}
+            >
               Trước
             </button>
-            <button className="border border-gray-300 bg-white px-2 py-1 rounded-md hover:bg-gray-100">
+            <button
+              className="border border-gray-300 bg-white px-2 py-1 rounded-md hover:bg-gray-100"
+              onClick={() =>
+                dispatch({
+                  type: 'SET_PAGINATION',
+                  payload: { ...pagination, pageNumber: pagination.pageNumber + 1 },
+                })
+              }
+              disabled={pagination.pageNumber === totalPages}
+            >
               Tiếp
             </button>
           </div>

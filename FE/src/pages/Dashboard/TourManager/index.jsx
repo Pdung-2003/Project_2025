@@ -17,7 +17,7 @@ const TourManager = () => {
   const dispatchUser = useUserDispatch();
   const dispatch = useTourDispatch();
   const { fetchTours } = useTourActions();
-  const { tours, filter, pagination, totalElements } = useTourState();
+  const { tours, filter, pagination, totalElements, totalPages } = useTourState();
   const [isConfirmOpen, setIsConfirmOpen] = useState(null);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isAddTourOpen, setIsAddTourOpen] = useState(false);
@@ -124,7 +124,9 @@ const TourManager = () => {
             <tbody>
               {tours.map((tour, index) => (
                 <tr key={tour.tourId} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 text-center p-2">{index + 1}</td>
+                  <td className="border border-gray-300 text-center p-2">
+                    {index + 1 + (pagination?.pageNumber - 1) * pagination?.pageSize}
+                  </td>
                   <td className="border border-gray-300 p-2">{tour.tourName}</td>
                   <td className="border border-gray-300 p-2">{tour.companyName}</td>
                   <td className="border border-gray-300 p-2">{tour?.manager?.fullName}</td>
@@ -233,10 +235,28 @@ const TourManager = () => {
             {pagination?.pageNumber * pagination?.pageSize} trên {totalElements} kết quả
           </p>
           <div className="flex items-center gap-2">
-            <button className="border border-gray-300 bg-white px-2 py-1 rounded-md hover:bg-gray-100">
+            <button
+              className="border border-gray-300 bg-white px-2 py-1 rounded-md hover:bg-gray-100 disabled:opacity-50"
+              onClick={() =>
+                dispatch({
+                  type: 'SET_PAGINATION',
+                  payload: { ...pagination, pageNumber: pagination.pageNumber - 1 },
+                })
+              }
+              disabled={pagination.pageNumber === 1}
+            >
               Trước
             </button>
-            <button className="border border-gray-300 bg-white px-2 py-1 rounded-md hover:bg-gray-100">
+            <button
+              className="border border-gray-300 bg-white px-2 py-1 rounded-md hover:bg-gray-100 disabled:opacity-50"
+              onClick={() =>
+                dispatch({
+                  type: 'SET_PAGINATION',
+                  payload: { ...pagination, pageNumber: pagination.pageNumber + 1 },
+                })
+              }
+              disabled={pagination.pageNumber === totalPages}
+            >
               Tiếp
             </button>
           </div>
