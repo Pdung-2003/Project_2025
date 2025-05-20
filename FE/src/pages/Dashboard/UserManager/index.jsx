@@ -1,4 +1,4 @@
-import SearchDebounce from '@/components/common/SearchDebounce';
+// import SearchDebounce from '@/components/common/SearchDebounce';
 import UserManagerModal from '@/components/user/UserManagerModal';
 import { useUserDispatch, useUserState } from '@/contexts/UserContext';
 import { useUserActions } from '@/hooks/useUserActions';
@@ -11,7 +11,7 @@ const UserManager = () => {
   const dispatch = useUserDispatch();
   const { users } = useUserState();
   const [userDelete, setUserDelete] = useState(null);
-  const [search, setSearch] = useState('');
+  // const [search, setSearch] = useState('');
   const [userEdit, setUserEdit] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const { fetchUsers } = useUserActions();
@@ -48,13 +48,13 @@ const UserManager = () => {
     <div className="flex flex-col w-full h-full">
       {/* Search */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-2 mx-2 my-2 items-center">
-        <SearchDebounce
+        {/* <SearchDebounce
           value={search}
           onChange={setSearch}
           placeholder="Họ tên người dùng"
           className="w-full rounded-md p-2 h-full"
-        />
-        <div className="col-span-4 flex justify-end">
+        /> */}
+        <div className="col-span-5 flex justify-end">
           <button className="btn-primary" onClick={() => setOpenModal(true)}>
             Thêm người dùng
           </button>
