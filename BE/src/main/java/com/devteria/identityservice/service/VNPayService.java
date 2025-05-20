@@ -197,6 +197,7 @@ public class VNPayService {
                     bookingService.changeStatusBooking(booking, Booking.Status.PAID);
                 } else {
                     payment.setPaymentStatus(Payment.PaymentStatus.FAILED);
+                    return false;
                 }
             }
             paymentRepository.save(payment);
