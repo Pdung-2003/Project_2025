@@ -25,6 +25,7 @@ public interface TourMapper {
         existTour.setLocation(request.getLocation());
         existTour.setDestination(request.getDestination());
         existTour.setPrice(request.getPrice());
+        existTour.setDiscount(request.getDiscount());
         existTour.setCompanyName(request.getCompanyName());
         existTour.setMaxCapacity(request.getMaxCapacity());
         existTour.setStartDate(request.getStartDate());

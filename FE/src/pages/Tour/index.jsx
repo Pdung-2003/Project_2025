@@ -10,8 +10,8 @@ const Tour = () => {
   const { tours, pagination, filter, totalElements, totalPages } = useTourState();
   const { fetchTours } = useTourActions();
 
-  const handleChangePage = (page) => {
-    dispatch({ type: 'SET_PAGINATION', payload: { ...pagination, page } });
+  const handleChangePage = (pageNumber) => {
+    dispatch({ type: 'SET_PAGINATION', payload: { ...pagination, pageNumber } });
   };
 
   useEffect(() => {

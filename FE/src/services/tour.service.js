@@ -26,8 +26,7 @@ export const createTour = async (tour) => {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
-  },
-  );
+  });
   return response.data;
 };
 
@@ -42,5 +41,10 @@ export const updateTour = async (id, tour) => {
 
 export const deleteTour = async (id) => {
   const response = await mainRequest.delete(`/api/tours/${id}`);
+  return response.data;
+};
+
+export const getFeedbacksByTourId = async (tourId) => {
+  const response = await mainRequest.get(`/api/feedbacks/tour/${tourId}`);
   return response.data;
 };

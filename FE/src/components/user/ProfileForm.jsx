@@ -54,8 +54,21 @@ const ProfileForm = () => {
           control={control}
           label="Ngày sinh"
           name="dob"
+          rules={{
+            validate: (value) => {
+              if (
+                new Date(value) > new Date() ||
+                new Date(value) > new Date(new Date().setFullYear(new Date().getFullYear() - 10))
+              ) {
+                return 'Ngày sinh không hợp lệ';
+              }
+            },
+          }}
           inputProps={{
             type: 'date',
+            max: new Date(new Date().setFullYear(new Date().getFullYear() - 10))
+              .toISOString()
+              .split('T')[0],
           }}
         />
         <div className="col-span-2">

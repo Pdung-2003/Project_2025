@@ -13,7 +13,7 @@ const TourFeatureSection = () => {
   }, []);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 mt-5">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Tour nổi bật</h2>
         <Link to="/tours" className="hover:text-blue-600">
@@ -22,7 +22,7 @@ const TourFeatureSection = () => {
       </div>
       <div className="grid grid-cols-3 gap-5">
         {tours.map((tour) => (
-          <TourCard key={tour.id} tour={tour} />
+          <TourCard key={tour.tourId} tour={tour} />
         ))}
       </div>
     </div>

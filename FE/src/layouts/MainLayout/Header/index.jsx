@@ -9,7 +9,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   const handleChangeValueInput = (value) => {
-    dispatch({ type: 'SET_FILTER', payload: { ...filter, searchKey: value } });
+    dispatch({ type: 'SET_FILTER', payload: { ...filter, tourName: value } });
   };
 
   return (

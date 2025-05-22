@@ -1,22 +1,32 @@
 import SearchDebounce from '@/components/common/SearchDebounce';
 import AddTourModal from '@/components/tour/AddTourModal';
 import ItineraryListModal from '@/components/tour/ItineraryListModal';
+import { useAuthState } from '@/contexts/AuthContext';
 import { useTourDispatch, useTourState } from '@/contexts/TourContext';
+import { useUserDispatch } from '@/contexts/UserContext';
 import { useTourActions } from '@/hooks/useTourActions';
+import { useUserActions } from '@/hooks/useUserActions';
 import { tourService } from '@/services';
 import { Ellipsis } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 
 const TourManager = () => {
+  const { user } = useAuthState();
+  const { fetchManagers } = useUserActions();
+  const dispatchUser = useUserDispatch();
   const dispatch = useTourDispatch();
   const { fetchTours } = useTourActions();
-  const { tours, filter, pagination } = useTourState();
+  const { tours, filter, pagination, totalElements, totalPages } = useTourState();
   const [isConfirmOpen, setIsConfirmOpen] = useState(null);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isAddTourOpen, setIsAddTourOpen] = useState(false);
   const [isUpdateTourOpen, setIsUpdateTourOpen] = useState(null);
   const [isShowItineraryModal, setIsShowItineraryModal] = useState(null);
+
+  const isTourManager = useMemo(() => {
+    return user?.roles?.some((role) => role.name === 'TOUR_MANAGER');
+  }, [user?.roles]);
 
   const deleteTour = async (tourId) => {
     try {
@@ -30,8 +40,14 @@ const TourManager = () => {
   };
 
   useEffect(() => {
-    fetchTours({ ...filter, ...pagination });
-  }, [filter, pagination]);
+    if (user?.id) {
+      fetchTours({
+        ...filter,
+        ...pagination,
+        managerId: isTourManager ? user?.id : filter?.managerId,
+      });
+    }
+  }, [filter, pagination, isTourManager, user?.id]);
 
   useEffect(() => {
     return () => {
@@ -51,11 +67,23 @@ const TourManager = () => {
   }, [setOpenDropdown]);
 
   useEffect(() => {
+    if (!isTourManager && user?.id) {
+      fetchManagers();
+    }
+    return () => {
+      dispatchUser({ type: 'RESET_STATE' });
+    };
+  }, [isTourManager, user?.id]);
+
+  useEffect(() => {
     const tableEl = document.getElementById('table-container');
     const heightWindow = window.innerHeight;
     const paginationHeight = document.getElementById('pagination').getBoundingClientRect().height;
     const tableTop = tableEl.getBoundingClientRect().top;
-    tableEl.style.height = `${heightWindow - tableTop - paginationHeight - 2}px`;
+    tableEl.style.height = `${heightWindow - tableTop - paginationHeight - 5}px`;
+    return () => {
+      dispatch({ type: 'RESET_INITIAL_STATE' });
+    };
   }, []);
 
   return (
@@ -63,27 +91,30 @@ const TourManager = () => {
       {/* Search */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-2 mx-2 my-2 items-center">
         <SearchDebounce
-          valueInput={filter?.searchKey || ''}
+          valueInput={filter?.tourName || ''}
           changeValueInput={(value) =>
-            dispatch({ type: 'SET_FILTER', payload: { ...filter, searchKey: value } })
+            dispatch({ type: 'SET_FILTER', payload: { ...filter, tourName: value } })
           }
-          placeholder="Tìm kiếm"
+          placeholder="Tên tour..."
           className="w-full rounded-md p-2 h-full"
         />
-        <div className="col-span-4 flex justify-end">
-          <button className="btn-primary" onClick={() => setIsAddTourOpen(true)}>
-            Thêm mới
-          </button>
-        </div>
+        {isTourManager && (
+          <div className="col-span-4 flex justify-end">
+            <button className="btn-primary" onClick={() => setIsAddTourOpen(true)}>
+              Thêm mới
+            </button>
+          </div>
+        )}
       </div>
       <div className="flex flex-col flex-1 mx-2 border border-gray-300 h-full overflow-visible">
-        <div id="table-container" className="overflow-visible">
+        <div id="table-container" className="overflow-auto">
           <table id="table" className="w-full table-auto border-separate z-10">
             <thead className="bg-gray-100 sticky top-0 z-20">
               <tr>
                 <th className="border border-gray-300 p-2">STT</th>
                 <th className="border border-gray-300 p-2">Tên tour</th>
                 <th className="border border-gray-300 p-2">Công ty</th>
+                <th className="border border-gray-300 p-2">Người quản lý</th>
                 <th className="border border-gray-300 p-2">Thời gian</th>
                 <th className="border border-gray-300 p-2">Địa điểm</th>
                 <th className="border border-gray-300 p-2">Giá</th>
@@ -92,20 +123,28 @@ const TourManager = () => {
             </thead>
             <tbody>
               {tours.map((tour, index) => (
-                <tr key={tour.id} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 text-center p-2">{index + 1}</td>
+                <tr key={tour.tourId} className="hover:bg-gray-50">
+                  <td className="border border-gray-300 text-center p-2">
+                    {index + 1 + (pagination?.pageNumber - 1) * pagination?.pageSize}
+                  </td>
                   <td className="border border-gray-300 p-2">{tour.tourName}</td>
                   <td className="border border-gray-300 p-2">{tour.companyName}</td>
+                  <td className="border border-gray-300 p-2">{tour?.manager?.fullName}</td>
                   <td className="border border-gray-300 p-2">{tour.duration}</td>
                   <td className="border border-gray-300 p-2">{tour.location}</td>
                   <td className="border border-gray-300 p-2">
-                    {tour?.price?.toLocaleString('vi-VN')}
+                    {tour?.price?.toLocaleString('vi-VN', {
+                      style: 'currency',
+                      currency: 'VND',
+                    })}
                   </td>
                   <td className="border border-gray-300 p-2 text-center">
                     <div className="relative dropdown-container flex items-center justify-center">
-                      <button onClick={() => setOpenDropdown(tour?.tourId)}>
-                        <Ellipsis className="w-4 h-4" />
-                      </button>
+                      {isTourManager && (
+                        <button onClick={() => setOpenDropdown(tour?.tourId)}>
+                          <Ellipsis className="w-4 h-4" />
+                        </button>
+                      )}
                       {openDropdown === tour?.tourId && (
                         <div className="absolute right-0 top-0 mt-2 w-48 bg-white shadow-md rounded-md z-50">
                           <button
@@ -191,12 +230,33 @@ const TourManager = () => {
           id="pagination"
           className="flex justify-between items-center gap-2 p-2 bg-white border-t border-gray-300"
         >
-          <p className="text-sm text-gray-500">Hiển thị 1 đến 10 trên 20 kết quả</p>
+          <p className="text-sm text-gray-500">
+            Hiển thị {(pagination?.pageNumber - 1) * pagination?.pageSize + 1} đến{' '}
+            {pagination?.pageNumber * pagination?.pageSize} trên {totalElements} kết quả
+          </p>
           <div className="flex items-center gap-2">
-            <button className="border border-gray-300 bg-white px-2 py-1 rounded-md hover:bg-gray-100">
+            <button
+              className="border border-gray-300 bg-white px-2 py-1 rounded-md hover:bg-gray-100 disabled:opacity-50"
+              onClick={() =>
+                dispatch({
+                  type: 'SET_PAGINATION',
+                  payload: { ...pagination, pageNumber: pagination.pageNumber - 1 },
+                })
+              }
+              disabled={pagination.pageNumber === 1}
+            >
               Trước
             </button>
-            <button className="border border-gray-300 bg-white px-2 py-1 rounded-md hover:bg-gray-100">
+            <button
+              className="border border-gray-300 bg-white px-2 py-1 rounded-md hover:bg-gray-100 disabled:opacity-50"
+              onClick={() =>
+                dispatch({
+                  type: 'SET_PAGINATION',
+                  payload: { ...pagination, pageNumber: pagination.pageNumber + 1 },
+                })
+              }
+              disabled={pagination.pageNumber === totalPages}
+            >
               Tiếp
             </button>
           </div>

@@ -2,6 +2,7 @@ package com.devteria.identityservice.dto.response;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -14,8 +15,8 @@ public class TourResponse {
     private String duration; // Ví dụ: 3N2Đ
     private String location;
     private String destination;
-    private Double price;
-    private Double discount;
+    private BigDecimal price;
+    private BigDecimal discount;
     private String companyName;
     private Integer maxCapacity;
     private Integer currentBooked;

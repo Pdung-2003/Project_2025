@@ -22,6 +22,7 @@ public class BookingFilterRequest {
     private Boolean isTicketSent;
     private BigDecimal minPrice;
     private BigDecimal maxPrice;
+    private Integer managerId;
     private Integer pageNumber = 0;
     private Integer pageSize = 10;
     private List<SortField> sort;

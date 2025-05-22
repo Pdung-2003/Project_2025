@@ -2,32 +2,34 @@ import './App.css';
 import { Route, Routes } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import HomePage from './pages/Home';
-import Dashboard from './pages/Dashboard';
 import UserManager from './pages/Dashboard/UserManager';
 import DashboardLayout from './layouts/DashboardLayout';
 import Profile from '@/pages/Profile';
 import Tour from '@/pages/Tour';
 import TourManager from '@/pages/Dashboard/TourManager';
-import Authentication from './Authentication';
 import PublicAuthentication from './PublicAuthentication';
+import TourDetails from './pages/TourDetails';
+import Authentication from './Authentication';
+import Checkout from './pages/Checkout';
+import RequestBooking from './pages/Dashboard/RequestBooking';
 
 function App() {
   return (
     <Routes>
-      <Route element={<PublicAuthentication />}>
-        {PUBLIC_ROUTES.map((route) => (
-          <Route
-            key={route.path}
-            path={route.path}
-            element={
-              <MainLayout>
-                <route.element />
-              </MainLayout>
-            }
-          />
-        ))}
-      </Route>
       <Route element={<Authentication />}>
+        <Route element={<PublicAuthentication />}>
+          {PUBLIC_ROUTES.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={
+                <MainLayout>
+                  <route.element />
+                </MainLayout>
+              }
+            />
+          ))}
+        </Route>
         {USER_PRIVATE_ROUTES.map((route) => (
           <Route
             key={route.path}
@@ -57,7 +59,7 @@ function App() {
 
 export default App;
 
-const PUBLIC_ROUTES = [
+export const PUBLIC_ROUTES = [
   {
     path: '/',
     element: HomePage,
@@ -66,20 +68,24 @@ const PUBLIC_ROUTES = [
     path: '/tours',
     element: Tour,
   },
+  {
+    path: '/tour-details/:id',
+    element: TourDetails,
+  },
 ];
 
-const USER_PRIVATE_ROUTES = [
+export const USER_PRIVATE_ROUTES = [
   {
     path: '/profile',
     element: Profile,
   },
+  {
+    path: '/checkout',
+    element: Checkout,
+  },
 ];
 
-const PRIVATE_ROUTES = [
-  {
-    path: '/dashboard',
-    element: Dashboard,
-  },
+export const PRIVATE_ROUTES = [
   {
     path: '/user-manager',
     element: UserManager,
@@ -87,5 +93,9 @@ const PRIVATE_ROUTES = [
   {
     path: '/tour-manager',
     element: TourManager,
+  },
+  {
+    path: '/request-booking',
+    element: RequestBooking,
   },
 ];

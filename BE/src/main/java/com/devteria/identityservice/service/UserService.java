@@ -193,69 +193,6 @@ public class UserService {
         return userMapper.toUserResponse(getUser(id));
     }
 
-    public void sendVerificationCode(String username) {
-        User user = getUser(username);
-        if(user.getEmailVerified().equals(true)) {
-            throw new BadRequestException("Your account has been successfully verified");
-        }
-
-        user.setVerificationCode(UUID.randomUUID().toString().split("-")[0].toUpperCase());
-        user.setVerificationCodeExpiry(LocalDateTime.now().plusMinutes(verificationCodeExpiry));
-        userRepository.save(user);
-        emailService.sendEmailVerify(user);
-    }
-
-    public void verifyEmail(VerifyEmailRequest request) {
-        String username = request.getUsername();
-        String code = request.getCode();
-        User user = getUser(username);
-        if(user.getEmailVerified().equals(true)) {
-            throw new BadRequestException("Your account has been successfully verified");
-        }
-
-        if (!user.getVerificationCode().equalsIgnoreCase(code)
-            || user.getVerificationCodeExpiry().isBefore(LocalDateTime.now())
-        ) {
-            throw new BadRequestException("Verification code incorrect");
-        }
-
-        user.setEmailVerified(true);
-        user.setVerificationCode(null);
-        user.setVerificationCodeExpiry(null);
-        userRepository.save(user);
-    }
-
-    public void sendResetPasswordCode(String username) {
-        User user = getUser(username);
-        if(user.getEmailVerified().equals(false)) {
-            throw new BadRequestException("Email not verified");
-        }
-
-        user.setPasswordResetCode(UUID.randomUUID().toString().split("-")[0].toUpperCase());
-        user.setPasswordResetExpiry(LocalDateTime.now().plusMinutes(passwordResetExpiry));
-        userRepository.save(user);
-        emailService.sendEmailResetPassword(user);
-    }
-
-    public void resetPassword(ResetPasswordRequest request) {
-        String username = request.getUsername();
-        String code = request.getCode();
-        String newPw = request.getNewPassword();
-
-        User user = getUser(username);
-
-        if (!user.getPasswordResetCode().equalsIgnoreCase(code)
-                || user.getPasswordResetExpiry().isBefore(LocalDateTime.now())
-        ) {
-            throw new BadRequestException("Reset password code incorrect");
-        }
-
-        user.setPasswordDigest(passwordEncoder.encode(newPw));
-        user.setPasswordResetCode(null);
-        user.setPasswordResetExpiry(null);
-        userRepository.save(user);
-    }
-
     public List<UserAdminResponse> getUserWithManagersRole() {
         Role role = roleRepository.findByName(PredefinedRole.TOUR_MANAGER_ROLE)
                 .orElseThrow();

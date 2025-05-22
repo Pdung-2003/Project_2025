@@ -1,4 +1,5 @@
 import mainRequest from '@/api/mainRequest';
+import { cleanBody } from '@/utils/format';
 
 export const getUsers = async () => {
   const response = await mainRequest.get('/users');
@@ -21,12 +22,12 @@ export const updateProfile = async (user) => {
 };
 
 export const createUser = async (user) => {
-  const response = await mainRequest.post('/users', user);
+  const response = await mainRequest.post('/users', cleanBody(user));
   return response.data;
 };
 
 export const updateUser = async (id, user) => {
-  const response = await mainRequest.put(`/users/${id}`, user);
+  const response = await mainRequest.put(`/users/${id}`, cleanBody(user));
   return response.data;
 };
 
@@ -39,4 +40,3 @@ export const getManagers = async () => {
   const response = await mainRequest.get('/users/managers');
   return response.data;
 };
-

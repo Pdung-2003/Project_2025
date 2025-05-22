@@ -44,6 +44,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {  //
       AND (:isTicketSent IS NULL OR b.isTicketSent = :isTicketSent)
       AND (:minPrice IS NULL OR b.priceBooking >= :minPrice)
       AND (:maxPrice IS NULL OR b.priceBooking <= :maxPrice)
+      AND (:managerId IS NULL OR b.tour.manager.id = :managerId)
 """)
     Page<Booking> findAllByFilter(
             @Param("userId") Integer userId,
@@ -55,6 +56,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {  //
             @Param("isTicketSent") Boolean isTicketSent,
             @Param("minPrice") BigDecimal minPrice,
             @Param("maxPrice") BigDecimal maxPrice,
+            @Param("managerId") Integer managerId,
             Pageable pageable
     );
 

@@ -21,7 +21,7 @@ const LoginForm = () => {
           type: 'LOGIN',
           payload: response?.result?.token,
         });
-        fetchProfile();
+        await fetchProfile();
         toast.success('Đăng nhập thành công');
       } else {
         toast.error(response?.message || 'Đăng nhập thất bại');
