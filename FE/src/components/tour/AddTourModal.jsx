@@ -18,21 +18,23 @@ const AddTourModal = ({ open, onClose, tourId }) => {
   const dispatchTour = useTourDispatch();
   const { pagination, tour } = useTourState();
   const { managers } = useUserState();
-  const { control, handleSubmit, reset, setValue } = useForm({
-    tourCode: null,
-    tourName: null,
-    description: null,
-    duration: null,
-    location: null,
-    destination: null,
-    price: null,
-    discount: null,
-    managerId: null,
-    companyName: null,
-    maxCapacity: null,
-    startDate: null,
-    endDate: null,
-    banner: null,
+  const { control, handleSubmit, reset, setValue } = useForm({ 
+    defaultValues: {
+      tourCode: null,
+      tourName: null,
+      description: null,
+      duration: null,
+      location: null,
+      destination: null,
+      price: null,
+      discount: null,
+      managerId: null,
+      companyName: null,
+      maxCapacity: null,
+      startDate: null,
+      endDate: null,
+      banner: null,
+    },
   });
 
   const isTourManager = useMemo(() => {

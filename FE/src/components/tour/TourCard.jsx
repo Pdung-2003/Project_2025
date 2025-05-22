@@ -12,7 +12,7 @@ const TourCard = ({ tour }) => {
     >
       {/* Hình ảnh */}
       <div className="h-[200px] aspect-[3/2] bg-gray-100 relative">
-        <img src={tour.tourBanner} alt="Tour Image" className="w-full h-full object-contain" />
+        <img src={tour.tourBanner} alt="Tour Image" className="w-full h-full object-cover" />
       </div>
 
       {/* Nội dung */}

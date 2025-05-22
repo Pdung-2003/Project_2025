@@ -11,12 +11,12 @@ const TourItem = ({ tour, isManager = false }) => {
       onClick={() => navigate(`/tour-details/${tour?.tourId}`)}
     >
       {/* Image */}
-      <div className="w-1/3 aspect-[3/2] bg-gray-100">
-        <img src={tour?.tourBanner} alt="Tour Image" className="w-full h-full object-contain" />
+      <div className="w-2/5 aspect-[3/2] bg-gray-100">
+        <img src={tour?.tourBanner} alt="Tour Image" className="w-full h-full object-cover" />
       </div>
 
       {/* Content */}
-      <div className="p-4 flex flex-col justify-between w-2/3">
+      <div className="p-4 flex flex-col justify-between w-3/5">
         {/* Title & Rating */}
         <div className="flex justify-between items-start">
           <div className="flex flex-col gap-2">
